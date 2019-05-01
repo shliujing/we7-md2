@@ -292,7 +292,6 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
         global $_GPC, $_W;
         $cfg = $this->module['config'];
         if (! empty($pic)) {
-            // $path = "/pics/".$_W['uniacid']."/" . date('Y/m/',time());
             // $this->createdir(MODULE_ROOT . $path);
             $allow_type = array(
                 'jpg',
@@ -303,7 +302,7 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
             $ext = $this->extend($pic['name']);
             if (in_array($ext, $allow_type)) {
                 $filename = random(30) . '.' . $ext;
-                $filename = 'images/' . $_W['uniacid'] . '/hr_album/' . date('Y/m/d/') . $filename;
+                $filename = 'images/' . $_W['uniacid'] . '/hr_album/' . date('Y-m-d/') . $filename;
                 $filenames = ATTACHMENT_ROOT . '/' . $filename;
                 load()->func('file');
                 file_move($pic['tmp_name'], $filenames);

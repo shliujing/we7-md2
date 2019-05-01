@@ -297,7 +297,7 @@ class Hr_albumModuleSite extends WeModuleSite {
         $size = intval($_FILES['file']['size']);
         $setting = $_W['setting']['upload']['image'];
         $setting['folder'] = "images/".$_W['uniacid'];
-        $setting['folder'] .= '/hr_album/' . date('Y/m/d/');
+        $setting['folder'] .= '/hr_album/' . date('Y-m-d/');
         $filename = file_random_name(ATTACHMENT_ROOT . '/' . $setting['folder'], $ext);
         $file = file_upload($_FILES['file'], 'image', $setting['folder'] . $filename);
         if (is_error($file)) {
