@@ -1,3 +1,4 @@
+tpl/
 /build
 /out
 .DS_Store
@@ -26,6 +27,5 @@ node_modules/
 public/
 .deploy*/%
 Config.java
-/tpl
 
 /test
