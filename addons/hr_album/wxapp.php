@@ -303,7 +303,7 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
             $ext = $this->extend($pic['name']);
             if (in_array($ext, $allow_type)) {
                 $filename = random(30) . '.' . $ext;
-                $filename = 'images/' . $_W['uniacid'] . '/hr_album/' . date('Y/m/') . $filename;
+                $filename = 'images/' . $_W['uniacid'] . '/hr_album/' . date('Y/m/d/') . $filename;
                 $filenames = ATTACHMENT_ROOT . '/' . $filename;
                 load()->func('file');
                 file_move($pic['tmp_name'], $filenames);
@@ -780,11 +780,12 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
             $data = pdo_fetchall("SELECT id,title,content,skin,isshow,addtime,avatar,nickname,click,share FROM " . tablename($this->modulename.'_data') . " WHERE uniacid = :uniacid and isshow = 1 ORDER BY addtime desc LIMIT ".($pindex - 1) * $psize.','.$psize,array(':uniacid' => $uniacid));              
             if($data){
                 for($i=0;$i<count($data);$i++){
-                    $pics = unserialize($data[$i]['content']); 
+                    $pics = unserialize($data[$i]['content']);
                     $data[$i]['thumb'] = $pics[0]['pics'];
+                    $data[$i]['str'] = $pics[0]['pics'];
                     unset($data[$i]['content']);
                 }
-            }            
+            }
             return json_encode($data);
         }
     }

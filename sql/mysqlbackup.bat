@@ -1,0 +1,1 @@
+C:\Tools\phpStudy\MySQL\bin\mysqldump.exe -hlocalhost -uroot -pAa111111> D:\lj\code\php\we7\we7-md\sql\%date%.sql
