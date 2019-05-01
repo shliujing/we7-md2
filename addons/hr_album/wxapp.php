@@ -782,7 +782,7 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
                 for($i=0;$i<count($data);$i++){
                     $pics = unserialize($data[$i]['content']);
                     $data[$i]['thumb'] = $pics[0]['pics'];
-                    $data[$i]['str'] = $pics[0]['pics'];
+                    $data[$i]['str'] = $this->cut_str($data[$i]['thumb'],'/',3) . ' 宝贝照片';
                     unset($data[$i]['content']);
                 }
             }
@@ -1297,6 +1297,25 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
             $data = acarr();
             $data[$index]['contnet'] = htmlspecialchars($data[$index]['contnet']);
             exit(json_encode($data[$index]));
+        }
+    }
+    public function cut_str($str,$sign,$number){
+        $array=explode($sign, $str);
+        $length=count($array);
+        if($number<0){
+            $new_array=array_reverse($array);
+            $abs_number=abs($number);
+            if($abs_number>$length){
+                return 'error';
+            }else{
+                return $new_array[$abs_number-1];
+            }
+        }else{
+            if($number>=$length){
+                return 'error';
+            }else{
+                return $array[$number];
+            }
         }
     }
 }
