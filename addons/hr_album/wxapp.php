@@ -424,6 +424,38 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
         }
     }
 
+    public function doPagePipei()
+    {
+        global $_GPC, $_W;
+        $cfg = $this->module['config'];
+        $pics = explode(',', $_GPC['pics']);
+        $skin = pdo_fetch("SELECT skiname,music FROM" . tablename($this->modulename . '_skin') . ' WHERE uniacid = :uniacid and skiname = :skiname', array(
+            ':uniacid' => $_W['uniacid'],
+            ':skiname' => $cfg['baseskin']
+        ));
+        for ($i = 0; $i < count($pics); $i ++) {
+            $item[$i]['pics'] = $pics[$i];
+        }
+        $data = array(
+            'content' => serialize($item),
+            'openid' => $_GPC['openid'],
+            'avatar' => $_GPC['avatar'],
+            'nickname' => $_GPC['nickname'],
+            'uniacid' => $_W['uniacid'],
+            'music' => $skin['music'],
+            'title' => $cfg['deftitle'],
+            'skin' => $skin['skiname'],
+            'addtime' => TIMESTAMP
+        );
+        pdo_insert($this->modulename . '_data', $data);
+        $id = pdo_insertid();
+        $msg = array(
+            'id' => $id,
+            'skin' => $skin['skiname']
+        );
+        return json_encode($msg);
+    }
+
     public function doPageSavedata()
     {
         global $_GPC, $_W;
@@ -435,7 +467,7 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
         ));
         for ($i = 0; $i < count($pics); $i ++) {
             $item[$i]['pics'] = $pics[$i];
-        }        
+        }
         $data = array(
             'content' => serialize($item),
             'openid' => $_GPC['openid'],
@@ -781,7 +813,7 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
                 for($i=0;$i<count($data);$i++){
                     $pics = unserialize($data[$i]['content']);
                     $data[$i]['thumb'] = $pics[0]['pics'];
-                    $data[$i]['str'] = $this->cut_str($data[$i]['thumb'],'/',3) . ' 宝贝照片';
+                    $data[$i]['str'] = $this->cut_str($data[$i]['thumb'],'/',3) . ' 照片';
                     unset($data[$i]['content']);
                 }
             }

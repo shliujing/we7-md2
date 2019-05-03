@@ -322,7 +322,7 @@ class Hr_albumModuleSite extends WeModuleSite {
 		if($_W['ispost']){
 		    if($op == 'del'){
 		        $id = intval($_GPC['id']);
-		        $ishere = pdo_delete($this->modulename.'_music',array('uniacid' => $_W['uniacid'],'id' => $id));
+                $ishere = pdo_delete($this->modulename.'_music',array('uniacid' => $_W['uniacid'],'id' => $id));
 		        if($ishere){
 		            $result = array(
 		                'result' => 1
