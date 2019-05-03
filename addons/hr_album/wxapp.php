@@ -857,18 +857,18 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
             $psize = 10;
             if ($openid) {//已登录
                 if ($searchIndex) {//我的宝贝
-                    $data = pdo_fetchall("SELECT title,url,classify FROM " . tablename($this->modulename . '_photos') . " WHERE uniacid = :uniacid and openid = :openid group by classify ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
+                    $data = pdo_fetchall("SELECT title,url,classify FROM " . tablename($this->modulename . '_photos') . " as a left join ". tablename($this->modulename . '_classify') . " as b on a.id=b.id WHERE a.uniacid = :uniacid and a.openid = :openid ORDER BY a.addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
                         ':uniacid' => $uniacid,
                         ':openid' => $openid
                     ));
                 } else {
-                    $data = pdo_fetchall("SELECT title,url,classify FROM " . tablename($this->modulename . '_photos') . " WHERE uniacid = :uniacid and schoolid = :schoolid group by classify ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
+                    $data = pdo_fetchall("SELECT title,url,classify FROM " . tablename($this->modulename . '_photos') . " a left join ". tablename($this->modulename . '_classify') . " b on a.id=b.id WHERE a.uniacid = :uniacid and a.schoolid = :schoolid ORDER BY a.addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
                         ':uniacid' => $uniacid,
                         ':schoolid' => $schoolid
                     ));
                 }
             } else {//没登录，best = 1，默认为初始幼儿园
-                $data = pdo_fetchall("SELECT title,url,classify FROM " . tablename($this->modulename . '_photos') . " WHERE uniacid = :uniacid and best=1 group by classify ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
+                $data = pdo_fetchall("SELECT title,url,classify FROM " . tablename($this->modulename . '_photos') . " a left join ". tablename($this->modulename . '_classify') . " b on a.id=b.id WHERE a.uniacid = :uniacid and a.best=1 ORDER BY a.addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
                     ':uniacid' => $uniacid
                 ));
             }
