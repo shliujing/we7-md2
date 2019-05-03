@@ -429,31 +429,21 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
         global $_GPC, $_W;
         $cfg = $this->module['config'];
         $pics = explode(',', $_GPC['pics']);
-        $skin = pdo_fetch("SELECT skiname,music FROM" . tablename($this->modulename . '_skin') . ' WHERE uniacid = :uniacid and skiname = :skiname', array(
-            ':uniacid' => $_W['uniacid'],
-            ':skiname' => $cfg['baseskin']
-        ));
-        for ($i = 0; $i < count($pics); $i ++) {
-            $item[$i]['pics'] = $pics[$i];
-        }
         $data = array(
-            'content' => serialize($item),
             'openid' => $_GPC['openid'],
             'avatar' => $_GPC['avatar'],
+            'num' => $_GPC['num'],
             'nickname' => $_GPC['nickname'],
             'uniacid' => $_W['uniacid'],
-            'music' => $skin['music'],
             'title' => $cfg['deftitle'],
-            'skin' => $skin['skiname'],
             'addtime' => TIMESTAMP
         );
-        pdo_insert($this->modulename . '_data', $data);
-        $id = pdo_insertid();
-        $msg = array(
-            'id' => $id,
-            'skin' => $skin['skiname']
-        );
-        return json_encode($msg);
+        $info = pdo_fetch("SELECT * FROM" . tablename($this->modulename . '_baby') . ' WHERE uniacid = :uniacid and nickname = :nickname and num = :num', array(
+            ':uniacid' => _W['uniacid'],
+            ':nickname' => $_GPC['nickname'],
+            ':num' =>$_GPC['num']
+        ));
+        return json_encode($info);
     }
 
     public function doPageSavedata()
