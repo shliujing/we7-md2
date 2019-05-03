@@ -855,22 +855,70 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
         if ($_W['ispost']) {
             $pindex = max(1, intval($_GPC['page']));
             $psize = 10;
+            $data = array();
             if ($openid) {//已登录
                 if ($searchIndex) {//我的宝贝
-                    $data = pdo_fetchall("SELECT title,url,classify FROM " . tablename($this->modulename . '_photos') . " WHERE uniacid = :uniacid and openid = :openid group by classify ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
+                    $data = pdo_fetchall("SELECT title,url,classify,schoolid FROM " . tablename($this->modulename . '_photos') . " WHERE uniacid = :uniacid and openid = :openid group by classify ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
                         ':uniacid' => $uniacid,
                         ':openid' => $openid
                     ));
                 } else {
-                    $data = pdo_fetchall("SELECT title,url,classify FROM " . tablename($this->modulename . '_photos') . " WHERE uniacid = :uniacid and schoolid = :schoolid group by classify ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
+                    $data = pdo_fetchall("SELECT title,url,classify,schoolid FROM " . tablename($this->modulename . '_photos') . " WHERE uniacid = :uniacid and schoolid = :schoolid group by classify ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
                         ':uniacid' => $uniacid,
                         ':schoolid' => $schoolid
                     ));
                 }
-            } else {//没登录，best = 1，默认为初始幼儿园
-                $data = pdo_fetchall("SELECT title,url,classify FROM " . tablename($this->modulename . '_photos') . " WHERE uniacid = :uniacid and best=1 group by classify ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
-                    ':uniacid' => $uniacid
-                ));
+            } else {//没登录，best = 1 为初始推荐的，默认只有幼儿园有数据，我的孩子是没有的
+                if (!$searchIndex) {// 幼儿园
+                    $data = pdo_fetchall("SELECT title,url,classify,schoolid FROM " . tablename($this->modulename . '_photos') . " WHERE uniacid = :uniacid and best=1  group by classify ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
+                        ':uniacid' => $uniacid,
+                    ));
+                }
+            }
+
+            return json_encode($data);
+        }
+    }
+
+    public function doPageGetClassify()
+    {
+        global $_GPC, $_W;
+        $uniacid = $_W['uniacid'];
+        $openid = $_GPC['openid'];
+        $schoolid = $_GPC['schoolid'];
+        $classify = $_GPC['classify'];
+        $searchIndex = $_GPC['searchIndex'];
+        if ($searchIndex == null || $searchIndex == "0") {
+            $searchIndex = true;//首页，我的
+        } else {
+            $searchIndex = false;//首页，幼儿园
+        }
+        $page = intval($_GPC['page']);
+        if ($_W['ispost']) {
+            $pindex = max(1, intval($_GPC['page']));
+            $psize = 10;
+            if ($openid) {//已登录
+                if ($searchIndex) {//我的宝贝
+                    $data = pdo_fetchall("SELECT title,url,classify,schoolid FROM " . tablename($this->modulename . '_photos') . " WHERE uniacid = :uniacid and openid = :openid and  classify =:classify ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
+                        ':uniacid' => $uniacid,
+                        ':openid' => $openid,
+                        ':classify' => $classify
+
+                    ));
+                } else {
+                    $data = pdo_fetchall("SELECT title,url,classify,schoolid FROM " . tablename($this->modulename . '_photos') . " WHERE uniacid = :uniacid and schoolid = :schoolid  and  classify =:classify  ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
+                        ':uniacid' => $uniacid,
+                        ':schoolid' => $schoolid,
+                        ':classify' => $classify,
+                    ));
+                }
+            } else {//没登录，best = 1 为初始推荐的，默认只有幼儿园有数据，我的孩子是没有的
+                if (!$searchIndex) {// 幼儿园
+                    $data = pdo_fetchall("SELECT title,url,classify,schoolid FROM " . tablename($this->modulename . '_photos') . " WHERE uniacid = :uniacid and best=1  and  classify =:classify  ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
+                        ':uniacid' => $uniacid,
+                        ':classify' => $classify,
+                    ));
+                }
             }
 
             return json_encode($data);
