@@ -428,20 +428,28 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
     {
         global $_GPC, $_W;
         $cfg = $this->module['config'];
-        $pics = explode(',', $_GPC['pics']);
-        $data = array(
-            'openid' => $_GPC['openid'],
-            'avatar' => $_GPC['avatar'],
-            'num' => $_GPC['num'],
-            'nickname' => $_GPC['nickname'],
-            'uniacid' => $_W['uniacid'],
-            'title' => $cfg['deftitle'],
-            'addtime' => TIMESTAMP
-        );
         $info = pdo_fetch("SELECT * FROM" . tablename($this->modulename . '_baby') . ' WHERE uniacid = :uniacid and nickname = :nickname and num = :num', array(
-            ':uniacid' => _W['uniacid'],
+            ':uniacid' => $_W['uniacid'],
             ':nickname' => $_GPC['nickname'],
             ':num' =>$_GPC['num']
+        ));
+
+        pdo_query("UPDATE " . tablename($this->modulename . '_baby') . " SET openid = :openid, nickname = :nickname  WHERE id = :id", array(
+            ':openid' => $_GPC['openid'],
+            ':nickname' => $_GPC['nickname'],
+            ':id' => $info['id'],
+        ));
+
+        return json_encode($info);
+    }
+
+    public function doPageGetbaby()
+    {
+        global $_GPC, $_W;
+        $cfg = $this->module['config'];
+        $info = pdo_fetch("SELECT * FROM" . tablename($this->modulename . '_baby') . ' WHERE uniacid = :uniacid and openid = :openid', array(
+            ':uniacid' => $_W['uniacid'],
+            ':openid' => $_GPC['openid']
         ));
         return json_encode($info);
     }
@@ -538,7 +546,7 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
         $uniacid = $_GPC['uniacid'];
         $pid = $_GPC['pid'];
         $pdata = pdo_fetch("SELECT id,openid,nickname,avatar,title,skin,content,click,share,addtime,music FROM" . tablename($this->modulename . '_data') . " WHERE uniacid = :uniacid and id = :id ORDER BY addtime DESC", array(
-            ':uniacid' => $uniacid, 
+            ':uniacid' => $uniacid,
             ':id' => $pid
         ));
         $piclist = unserialize($pdata['content']);
@@ -556,7 +564,7 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
         $data = array(
             'pdata' => $pdata,
             'imgurl' => $this->imgurl(),
-            'skinurl' => $skinurl, 
+            'skinurl' => $skinurl,
             'isico' => $cfg['isico'],
             'ispay' => $cfg['ispay'],
             'tnum' => count($pdata['pic'])
@@ -645,7 +653,7 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
                 'skindata' => $skin
             );
         }
-        
+
         return json_encode($data);
     }
 
@@ -687,14 +695,14 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
         global $_GPC, $_W;
         $keyword = strip_gpc($_GPC['title']);
         if (empty($keyword)) die('1');
-            load()->func('communication');            
+            load()->func('communication');
             $url = "https://auth-external.music.qq.com/open/fcgi-bin/fcg_weixin_music_search.fcg?remoteplace=txt.weixin.officialaccount&w={$keyword}&platform=weixin&perpage=15&curpage=1";
             $res = ihttp_get($url);
             $res = json_decode($res['content'],true);
             $list = $res['list'];
             if(empty($list)) die('1');
         $key = $this->vkey();
-        for ($i = 0; $i < count($list); $i ++) {           
+        for ($i = 0; $i < count($list); $i ++) {
             $mudata[$i]['id'] = $i;
             $mudata[$i]['title'] = $list[$i]['songname'];
             $mudata[$i]['singer'] = $list[$i]['singername'];
@@ -773,9 +781,9 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
         $isok = $pc->checkSignature($signature, $timestamp, $nonce);
         if ($isok) {
             return $echostr;
-        }      
+        }
     }
-    
+
     public function sendRes($pdata)
     {
         global $_W;
@@ -798,7 +806,7 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
         if($_W['ispost']){
             $pindex = max(1, intval($_GPC['page']));
             $psize = 5;
-            $data = pdo_fetchall("SELECT id,title,content,skin,isshow,addtime,avatar,nickname,click,share FROM " . tablename($this->modulename.'_data') . " WHERE uniacid = :uniacid and isshow = 1 ORDER BY addtime desc LIMIT ".($pindex - 1) * $psize.','.$psize,array(':uniacid' => $uniacid));              
+            $data = pdo_fetchall("SELECT id,title,content,skin,isshow,addtime,avatar,nickname,click,share FROM " . tablename($this->modulename.'_data') . " WHERE uniacid = :uniacid and isshow = 1 ORDER BY addtime desc LIMIT ".($pindex - 1) * $psize.','.$psize,array(':uniacid' => $uniacid));
             if($data){
                 for($i=0;$i<count($data);$i++){
                     $pics = unserialize($data[$i]['content']);
@@ -828,7 +836,7 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
     public function doPageAdslist(){
         global $_GPC, $_W;
         $ads = pdo_fetchall("SELECT title,thumb,type,path,appid FROM".tablename($this->modulename.'_ads')." WHERE uniacid = :uniacid",array(':uniacid' => $_W['uniacid']));
-        return json_encode($ads); 
+        return json_encode($ads);
     }
     public function doPageShareset(){
         global $_GPC, $_W;
@@ -844,7 +852,7 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
                    'id' => $id,
                    'openid' => $openid,
                    'uniacid' => $uniacid,
-                   'addtime' => TIMESTAMP                   
+                   'addtime' => TIMESTAMP
                );
                pdo_insert($this->modulename.'_review',$data);
            }
@@ -852,8 +860,8 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
                    'success' => 1,
                    'isshow' =>1
             );
-        }else{               
-            $result = pdo_update($this->modulename.'_data',array('isshow' => $isshow),array('uniacid' => $uniacid,'openid' => $openid,'id'=>$id));   
+        }else{
+            $result = pdo_update($this->modulename.'_data',array('isshow' => $isshow),array('uniacid' => $uniacid,'openid' => $openid,'id'=>$id));
             if($result){
                 $data = array(
                     'success' => 1,
@@ -864,9 +872,9 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
                     'success' => 0
                 );
             }
-        }        
+        }
         return json_encode($data);
-    } 
+    }
     private  function hex2rgb($hexColor) {
         $color = str_replace('#', '', $hexColor);
         if (strlen($color) > 3) {
@@ -901,7 +909,7 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
         $fontBox = imagettfbbox(20, 0,$font, $text);//文字水平居中实质
         imagettftext ( $target, 20, 0, ceil((600 - $fontBox[2]) / 2),300, $fontColor, $font, $text );
         header("content-type: image/jpeg");
-        imagejpeg($target);        
+        imagejpeg($target);
         //销毁该图片(释放内存)
         imagedestroy($target);
     }
@@ -963,13 +971,13 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
         return json_encode($result);
     }
     public function doPagePaylog(){
-        global $_GPC, $_W; 
+        global $_GPC, $_W;
         $openid = $_GPC['openid'];
         $list = pdo_fetchall("SELECT avatar,tnickname,cost,addtime FROM".tablename($this->modulename.'_paylog')." WHERE tid = :tid and transaction_id != '' ORDER BY addtime desc",array(':tid' => $openid));
-        for ($i=0;$i<count($list);$i++){ 
-            $list[$i]['addtime'] = date('Y-m-d H:s:i',$list[$i]['addtime']);  
+        for ($i=0;$i<count($list);$i++){
+            $list[$i]['addtime'] = date('Y-m-d H:s:i',$list[$i]['addtime']);
         }
-        return json_encode($list); 
+        return json_encode($list);
     }
     public function doPageTxlog(){
         global $_GPC, $_W;
