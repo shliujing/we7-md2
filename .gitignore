@@ -28,4 +28,6 @@ public/
 .deploy*/%
 Config.java
 
-/test
+test/
+log--res.txt
+
