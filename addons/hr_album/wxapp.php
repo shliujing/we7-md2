@@ -446,9 +446,10 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
     {
         global $_GPC, $_W;
         $cfg = $this->module['config'];
-        $info = pdo_fetch("SELECT * FROM" . tablename($this->modulename . '_baby') . ' WHERE uniacid = :uniacid and nickname = :nickname and num = :num', array(
+
+        //先把父母亲名字去掉吧
+        $info = pdo_fetch("SELECT * FROM" . tablename($this->modulename . '_baby') . ' WHERE uniacid = :uniacid and num = :num', array(
             ':uniacid' => $_W['uniacid'],
-            ':nickname' => $_GPC['nickname'],
             ':num' => $_GPC['num']
         ));
 
