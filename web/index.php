@@ -91,23 +91,24 @@ if (is_array($acl[$controller]['direct']) && in_array($action, $acl[$controller]
 	exit();
 }
 checklogin();
-if ($_W['role'] != ACCOUNT_MANAGE_NAME_FOUNDER) {
-	if ($_W['role'] == ACCOUNT_MANAGE_NAME_UNBIND_USER) {
-		itoast('', url('user/third-bind'));
-	}
-	if (empty($_W['uniacid'])) {
-		if (defined('FRAME') && FRAME == 'account') {
-			itoast('', url('account/display', array('type' => ACCOUNT_TYPE_SIGN)), 'info');
-		}
-		if (defined('FRAME') && FRAME == 'wxapp') {
-			itoast('', url('account/display', array('type' => WXAPP_TYPE_SIGN)), 'info');
-		}
-	}
-	$acl = permission_build();
-	if (empty($acl[$controller][$_W['role']]) || (!in_array($controller.'*', $acl[$controller][$_W['role']]) && !in_array($action, $acl[$controller][$_W['role']]))) {
-		message('不能访问, 需要相应的权限才能访问！');
-	}
-}
+//todo
+//if ($_W['role'] != ACCOUNT_MANAGE_NAME_FOUNDER) {
+//	if ($_W['role'] == ACCOUNT_MANAGE_NAME_UNBIND_USER) {
+//		itoast('', url('user/third-bind'));
+//	}
+//	if (empty($_W['uniacid'])) {
+//		if (defined('FRAME') && FRAME == 'account') {
+//			itoast('', url('account/display', array('type' => ACCOUNT_TYPE_SIGN)), 'info');
+//		}
+//		if (defined('FRAME') && FRAME == 'wxapp') {
+//			itoast('', url('account/display', array('type' => WXAPP_TYPE_SIGN)), 'info');
+//		}
+//	}
+//	$acl = permission_build();
+//	if (empty($acl[$controller][$_W['role']]) || (!in_array($controller.'*', $acl[$controller][$_W['role']]) && !in_array($action, $acl[$controller][$_W['role']]))) {
+//		message('不能访问, 需要相应的权限才能访问！');
+//	}
+//}
 require _forward($controller, $action);
 
 define('ENDTIME', microtime());

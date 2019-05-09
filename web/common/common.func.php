@@ -105,6 +105,7 @@ function itoast($message, $redirect = '', $type = '', $extend = array()) {
 
 function checklogin() {
 	global $_W;
+	// todo
 	if (empty($_W['uid'])) {
 		if (!empty($_W['setting']['copyright']['showhomepage'])) {
 			itoast('', url('account/welcome'), 'warning');

@@ -452,12 +452,13 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
             ':uniacid' => $_W['uniacid'],
             ':num' => $_GPC['num']
         ));
-
-        pdo_query("UPDATE " . tablename($this->modulename . '_baby') . " SET openid = :openid, nickname = :nickname  WHERE id = :id", array(
-            ':openid' => $_GPC['openid'],
-            ':nickname' => $_GPC['nickname'],
-            ':id' => $info['id'],
-        ));
+        if ($info) {
+            pdo_query("UPDATE " . tablename($this->modulename . '_baby') . " SET openid = :openid, nickname = :nickname  WHERE id = :id", array(
+                ':openid' => $_GPC['openid'],
+                ':nickname' => $_GPC['nickname'],
+                ':id' => $info['id'],
+            ));
+        }
 
         return json_encode($info);
     }
@@ -472,6 +473,41 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
         ));
         return json_encode($info);
     }
+
+//用户类型判断接口
+    public function doPageCaseUser()
+    {
+        global $_GPC, $_W;
+        $info = pdo_fetch("SELECT * FROM" . tablename($this->modulename . '_user') . ' WHERE uniacid = :uniacid and openid = :openid', array(
+            ':uniacid' => $_W['uniacid'],
+            ':openid' => $_GPC['openid']
+        ));
+        return json_encode($info);
+    }
+
+//老师信息绑定页，参照家长页 todo 新起 1 个表，用于展示用户，更新到原来的 user 表上。老表加 phone， type ，teachername
+    public function doPagePipeiTe()
+    {
+        global $_GPC, $_W;
+
+        $info = pdo_fetch("SELECT * FROM" . tablename($this->modulename . '_user_backend') . ' WHERE uniacid = :uniacid and type=:type and phone = :phone', array(
+            ':uniacid' => $_W['uniacid'],
+            ':type' => $_W['type'],
+            ':phone' => $_GPC['phone']
+        ));
+
+        if ($info) {
+            pdo_query("UPDATE " . tablename($this->modulename . '_user') . " SET teachername = :teachername , phone = :phone , type = :type WHERE  openid = :openid ", array(
+                ':teachername' => $info['teachername'],
+                ':phone' => $info['phone'],
+                ':type' => $info['type'],
+                ':openid' => $_GPC['openid']
+            ));
+        }
+
+        return json_encode($info);
+    }
+
 
     public function doPageSavedata()
     {

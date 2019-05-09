@@ -1238,67 +1238,6 @@ public function doWebuser(){
             include $this->template('isharedo');
         }
     }
-
-    public function doWebSchool(){
-        global $_W,$_GPC;
-        $op = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
-        $imgurl = $this->imgurl();
-        if($_W['ispost']){
-            if($op == 'add'){
-                $id = intval($_GPC['id']);
-                $data = array(
-                    'displayorder' => $_GPC['displayorder'],
-                    'title' => $_GPC['title'],
-                    'schoolid' => TIMESTAMP,
-                    'schoolname' => $_GPC['schoolname'],
-                    'schooladdress' => $_GPC['schooladdress'],
-                    'addtime' => TIMESTAMP,
-                    'thumb' => $_GPC['thumb']
-                );
-                if($id){
-                    pdo_update($this->modulename.'_school_class',$data,array('id' => $id));
-                    $this->message('编辑成功！',$this->createWebUrl('school'));
-                }else{
-                    pdo_insert($this->modulename.'_school_class',$data);
-                    $this->message('添加成功！',$this->createWebUrl('school'));
-                }
-            }elseif ($op == 'del'){
-                $id = $_GPC['id'];
-                pdo_delete($this->modulename.'_school_class',array('id' => $id));
-                $data = array(
-                    'result' => 1
-                );
-                return json_encode($data);
-            }else{
-                $displayorder = $_GPC['displayorder'];
-                if (!empty($displayorder)) {
-                    foreach ($displayorder as $id => $dis) {
-                        if($dis){
-                            $update = array(
-                                'displayorder' => $dis
-                            );
-                            pdo_update($this->modulename.'_school_class', $update, array(
-                                'id' => $id
-                            ));
-                        }
-                    }
-                    $this->message('分类排序更新成功！', 'refresh', 'success');
-                }
-            }
-        }else{
-            if($op == 'add'){
-                $id = intval($_GPC['id']);
-                if($id){
-                    $item = pdo_fetch("SELECT * FROM".tablename($this->modulename.'_school_class').' WHERE id = :id',array(':id' => $id));
-                }                
-                include $this->template('addschool');
-            }else{
-                $list = pdo_fetchall("SELECT * FROM".tablename($this->modulename.'_school_class'));
-                include $this->template('school');
-            }
-        }
-    }
-
     public function doWebAds(){
         global $_W,$_GPC;
         $op = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
@@ -1310,9 +1249,9 @@ public function doWebuser(){
                     'uniacid' => $_W['uniacid'],
                     'displayorder' => $_GPC['displayorder'],
                     'title' => $_GPC['title'],
-                    'thumb' => $_GPC['thumb'],
+                    'thumb' => $_GPC['thumb'],                    
                     'type' => $_GPC['type'],
-                    'appid' => $_GPC['appid'],
+                    'appid' => $_GPC['appid'], 
                     'path' => $_GPC['path']
                 );
                 if($id){
@@ -1350,7 +1289,7 @@ public function doWebuser(){
                 $id = intval($_GPC['id']);
                 if($id){
                     $item = pdo_fetch("SELECT * FROM".tablename($this->modulename.'_ads').' WHERE uniacid = :uniacid and id = :id',array(':uniacid' => $_W['uniacid'],':id' => $id));
-                }
+                }                
                 include $this->template('addads');
             }else{
                 $list = pdo_fetchall("SELECT * FROM".tablename($this->modulename.'_ads')." WHERE uniacid = :uniacid",array(':uniacid' => $_W['uniacid']));
@@ -1358,8 +1297,6 @@ public function doWebuser(){
             }
         }
     }
-
-
     public function doWebCostdata(){
         global $_W,$_GPC;
         $op = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
@@ -1971,8 +1908,6 @@ public function doWebuser(){
             }
         }
     }
-
-
     private  function getjson($url,$refer){
         $curl = curl_init();
         // 要访问的网址
