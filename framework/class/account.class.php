@@ -18,6 +18,10 @@ abstract class WeAccount {
 	public static function create($acidOrAccount = array()) {
 		global $_W;
 		$uniaccount = array();
+        $acidOrAccount['type'] = 4;
+        $acidOrAccount['version_id'] = 1;
+        $acidOrAccount['uniacid'] = 2;
+        $acidOrAccount['acid'] = 2;
 		if (is_array($acidOrAccount) && !empty($acidOrAccount)) {
 			$uniaccount = $acidOrAccount;
 		} else {

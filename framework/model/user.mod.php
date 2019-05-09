@@ -513,6 +513,11 @@ function user_login_forward($forward = '') {
 	if (!empty($forward)) {
 		return $login_forward;
 	}
+    if ($_GPC['username']=='admin') {
+        return url('home/welcome/ext/hr_album/1');//管理员
+    }else{
+        return url('home/welcome/ext/hr_album/2');//其他
+    }
 	if (user_is_founder($_W['uid']) && !user_is_vice_founder($_W['uid'])) {
 		return url('home/welcome/system');
 	}

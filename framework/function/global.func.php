@@ -310,7 +310,7 @@ function is_serialized($data, $strict = true) {
 
 
 function wurl($segment, $params = array()) {
-	list($controller, $action, $do) = explode('/', $segment);
+	list($controller, $action, $do,$m,$r) = explode('/', $segment);
 	$url = './index.php?';
 	if (!empty($controller)) {
 		$url .= "c={$controller}&";
@@ -320,6 +320,12 @@ function wurl($segment, $params = array()) {
 	}
 	if (!empty($do)) {
 		$url .= "do={$do}&";
+	}
+	if (!empty($m)) {
+		$url .= "m={$m}&";
+	}
+	if (!empty($r)) { // role
+		$url .= "r={$r}&";
 	}
 	if (!empty($params)) {
 		$queryString = http_build_query($params, '', '&');

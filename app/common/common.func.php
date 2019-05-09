@@ -10,7 +10,6 @@ function url($segment, $params = array(), $noredirect = false) {
 	return murl($segment, $params, $noredirect);
 }
 
-
 function message($msg, $redirect = '', $type = '') {
 	global $_W;
 	if($redirect == 'refresh') {

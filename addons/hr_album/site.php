@@ -129,7 +129,7 @@ class Hr_albumModuleSite extends WeModuleSite {
             );
             $ftp = new Ftp($ftp_config);
             if (true === $ftp->connect()) {
-                $response = $ftp->upload(MODULE_ROOT . '/' . $filename, $filename);                
+                $response = $ftp->upload(MODULE_ROOT . '/' . $filename, $filename);
                 if (!empty($response)) {
                     return true;
                 } else {
@@ -144,7 +144,7 @@ class Hr_albumModuleSite extends WeModuleSite {
             $buckets = attachment_alioss_buctkets($remote['alioss']['key'], $remote['alioss']['secret']);
             $endpoint = 'http://'.$buckets[$remote['alioss']['bucket']]['location'].'.aliyuncs.com';
             $ossClient = new \OSS\OssClient($remote['alioss']['key'], $remote['alioss']['secret'], $endpoint);
-            $ossClient->uploadFile($remote['alioss']['bucket'], $filename, MODULE_ROOT.'/'.$filename); 
+            $ossClient->uploadFile($remote['alioss']['bucket'], $filename, MODULE_ROOT.'/'.$filename);
             return true;
         }elseif ($remote['type'] == '3') {
             load()->library('qiniu');
@@ -152,7 +152,7 @@ class Hr_albumModuleSite extends WeModuleSite {
             $uploadmgr = new Qiniu\Storage\UploadManager();
             $putpolicy = Qiniu\base64_urlSafeEncode(json_encode(array('scope' => $remote['qiniu']['bucket'].':'. $filename)));
             $uploadtoken = $auth->uploadToken($remote['qiniu']['bucket'], $filename, 3600, $putpolicy);
-            list($ret, $err) = $uploadmgr->putFile($uploadtoken, $filename, MODULE_ROOT. '/'.$filename);            
+            list($ret, $err) = $uploadmgr->putFile($uploadtoken, $filename, MODULE_ROOT. '/'.$filename);
             if ($err !== null) {
                 return error(1, '远程附件上传失败，请检查配置并重新上传');
             } else {
@@ -303,7 +303,7 @@ class Hr_albumModuleSite extends WeModuleSite {
         if (is_error($file)) {
             $result['message'] = $file['message'];
             die(json_encode($result));
-        }    
+        }
         $cfg = $this->module['config'];
         $pathname = $file['path'];
         if ($cfg['remote']['type']) {
@@ -315,192 +315,192 @@ class Hr_albumModuleSite extends WeModuleSite {
         $ret["src"] = $file['path'];
         echo json_encode($ret);
     }
-	public function doWebMusic() {
-		//这个操作被定义用来呈现 管理中心导航菜单
-		global $_W, $_GPC;
-		$op = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
-		if($_W['ispost']){
-		    if($op == 'del'){
-		        $id = intval($_GPC['id']);
+    public function doWebMusic() {
+        //这个操作被定义用来呈现 管理中心导航菜单
+        global $_W, $_GPC;
+        $op = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
+        if($_W['ispost']){
+            if($op == 'del'){
+                $id = intval($_GPC['id']);
                 $ishere = pdo_delete($this->modulename.'_music',array('uniacid' => $_W['uniacid'],'id' => $id));
-		        if($ishere){
-		            $result = array(
-		                'result' => 1
-		            );
-		        }else{
-		            $result = array(
-		                'result' => 0
-		            );
-		        }
-		        echo json_encode($result);
-		    }elseif ($op== 'sysmusic'){
-		        include_once 'public/arr.php';		        
-		        $mid = pdo_fetchcolumn("SELECT id FROM" . tablename($this->modulename.'_mucate'). " WHERE oldtitle = :oldtitle and uniacid = :uniacid",array(':oldtitle' => '网络',':uniacid' => $_W['uniacid']));      
-		        $liuxing = pdo_fetchcolumn("SELECT id FROM" . tablename($this->modulename.'_mucate'). " WHERE oldtitle = :oldtitle and uniacid = :uniacid",array(':oldtitle' => '流行',':uniacid' => $_W['uniacid']));
-		        $huaijiu = pdo_fetchcolumn("SELECT id FROM" . tablename($this->modulename.'_mucate'). " WHERE oldtitle = :oldtitle and uniacid = :uniacid",array(':oldtitle' => '怀旧',':uniacid' => $_W['uniacid']));
-		        $qingyin = pdo_fetchcolumn("SELECT id FROM" . tablename($this->modulename.'_mucate'). " WHERE oldtitle = :oldtitle and uniacid = :uniacid",array(':oldtitle' => '纯音乐',':uniacid' => $_W['uniacid']));
-		        if($mid){
-		        $music = unserialize(wangluo());
-		        for($i=0;$i<count($music);$i++){		            
-		                $title = pdo_fetchcolumn("SELECT count(*) FROM" . tablename($this->modulename.'_music') . " WHERE title = :title and uniacid = :uniacid",array('title' => $music[$i]['title'],':uniacid' => $_W['uniacid']));
-		                if(!$title){
-		                    $music[$i]['uniacid'] = $_W['uniacid'];
-		                    $music[$i]['addtime'] = TIMESTAMP;
-		                    $music[$i]['type'] = $mid;
-		                    pdo_insert($this->modulename.'_music',$music[$i]);
-		                }		            
-		        }
-		        }
-		        if($liuxing){
-		            $music = unserialize(liuxing());
-		            for($i=0;$i<count($music);$i++){
-		                $title = pdo_fetchcolumn("SELECT count(*) FROM" . tablename($this->modulename.'_music') . " WHERE title = :title and uniacid = :uniacid",array('title' => $music[$i]['title'],':uniacid' => $_W['uniacid']));
-		                if(!$title){
-		                    $music[$i]['uniacid'] = $_W['uniacid'];
-		                    $music[$i]['addtime'] = TIMESTAMP;
-		                    $music[$i]['type'] = $liuxing;
-		                    pdo_insert($this->modulename.'_music',$music[$i]);
-		                }
-		            }
-		        }
-		        if($huaijiu){
-		            $music = unserialize(huaijiu());
-		            for($i=0;$i<count($music);$i++){
-		                $title = pdo_fetchcolumn("SELECT count(*) FROM" . tablename($this->modulename.'_music') . " WHERE title = :title and uniacid = :uniacid",array('title' => $music[$i]['title'],':uniacid' => $_W['uniacid']));
-		                if(!$title){
-		                    $music[$i]['uniacid'] = $_W['uniacid'];
-		                    $music[$i]['addtime'] = TIMESTAMP;
-		                    $music[$i]['type'] = $huaijiu; 
-		                    pdo_insert($this->modulename.'_music',$music[$i]);
-		                }
-		            }
-		        }
-		        if($qingyin){
-		            $music = unserialize(qingyin());
-		            for($i=0;$i<count($music);$i++){
-		                $title = pdo_fetchcolumn("SELECT count(*) FROM" . tablename($this->modulename.'_music') . " WHERE title = :title and uniacid = :uniacid",array('title' => $music[$i]['title'],':uniacid' => $_W['uniacid']));
-		                if(!$title){
-		                    $music[$i]['uniacid'] = $_W['uniacid'];
-		                    $music[$i]['addtime'] = TIMESTAMP;
-		                    $music[$i]['type'] = $qingyin;
-		                    pdo_insert($this->modulename.'_music',$music[$i]);
-		                }
-		            }
-		        }
-		        $data = array(
-		            'result' => 'success'
-		        );
-		        echo json_encode($data);
-		    }elseif($op == 'delmusic'){
-		        pdo_delete($this->modulename.'_music',array('uniacid' => $_W['uniacid']));
-		        $data = array(
-		            'result' => 'success'
-		        );
-		        echo json_encode($data);
-		    }
-		}else{
-		   if($op == 'display'){
-		       $cate = pdo_fetchall("SELECT id,title FROM" . tablename($this->modulename.'_mucate')." WHERE uniacid = :uniacid",array(':uniacid' => $_W['uniacid']),id);
-		       $pindex = max(1, intval($_GPC['page']));
-		       $psize = 15;
-		       $list = pdo_fetchall("SELECT * FROM". tablename($this->modulename.'_music')." WHERE uniacid = :uniacid ORDER BY addtime DESC LIMIT ".($pindex - 1) * $psize.','.$psize,array(':uniacid' => $_W['uniacid']));
-		       $total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename($this->modulename.'_music') . " WHERE uniacid = :did",array(':did' => $_W['uniacid']));
-		       $pager = pagination($total, $pindex, $psize);
-		       include $this->template('music');		       
-		   }elseif ($op == 'edit'){
-		       $id = intval($_GPC['id']);
-		       $cate = pdo_fetchall("SELECT id,title FROM" . tablename($this->modulename.'_mucate')." WHERE uniacid = :uniacid",array(':uniacid' => $_W['uniacid']),id);
-		       $music = pdo_fetch("SELECT * FROM" . tablename($this->modulename.'_music') . " WHERE id = :id",array(':id' => $id));
-		       include $this->template('addmusic');
-		   }
-		}
-	}
-	public function doWebMucate(){
-	    global $_W, $_GPC;
-	    $op = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
-	    if($_W['ispost']){
-	        if ($op == 'sysmucate'){
-	            $mcate = array('网络','流行','怀旧','纯音乐','儿歌');
-	            for($i=0;$i<count($mcate);$i++){
-	                $ishere = pdo_fetchcolumn('SELECT id FROM'.tablename($this->modulename.'_mucate')." WHERE uniacid = :uniacid and title = :title",array(":title" => $mcate[$i],":uniacid" => $_W['uniacid']));
-	                if(!$ishere){
-	                    $data = array(
-	                        'title' => $mcate[$i],
-	                        'oldtitle' => $mcate[$i],
-	                        'uniacid' => $_W['uniacid'],
-	                        'addtime' => TIMESTAMP
-	                    );
-	                    $result = pdo_insert($this->modulename.'_mucate',$data);
-	                }
-	            }
-	            if($result){
-	                $msg = array(
-	                    'result' => 'success'
-	                );
-	            }else{
-	                $msg = array(
-	                    'result' => '0'
-	                );
-	            }
-	            echo json_encode($msg);
-	        }elseif ($op == 'delmucate'){
-	            $id = intval($_GPC['id']);
-	            $result  =  pdo_delete($this->modulename.'_mucate',array('uniacid' => $_W['uniacid'],'id' => $id));
-	            if($result){
-	                $data = array(
-	                    'result' => '1'
-	                );
-	            }else{
-	                $data = array(
-	                    'result' => '0'
-	                );
-	            }
-	            echo json_encode($data);
-	        }elseif ($op == 'edit'){
-	            $id = intval($_GPC['id']);
-	            $title = strip_gpc($_GPC['title']);
-	            $displayorder = intval($_GPC['displayorder']);
-	            pdo_update($this->modulename."_mucate",array('displayorder' => $displayorder,'title' => $title),array('id' => $id,'uniacid' => $_W['uniacid']));
-	            $this->message('音乐分类编辑成功！',$this->createWebUrl('mucate'));
-	        }else{
-	            $displayorder = $_GPC['displayorder'];
-	            if (!empty($displayorder)) {
-	                foreach ($displayorder as $id => $dis) {
-	                    if($dis){
-	                        $update = array(
-	                            'displayorder' => $dis
-	                        );
-	                        pdo_update($this->modulename.'_mucate', $update, array(
-	                            'id' => $id
-	                        ));
-	                    }
-	                }
-	                $this->message('分类排序更新成功！', 'refresh', 'success');
-	        }
-	        }
-	    }else{
-	        if($op == 'display'){
-	            $list = pdo_fetchall("SELECT * FROM" . tablename($this->modulename.'_mucate')." WHERE uniacid = :uniacid ORDER BY  displayorder DESC",array(":uniacid" => $_W['uniacid']));
-	            include $this->template('mucate');
-	        }elseif ($op == 'edit'){
-	            $id = intval($_GPC['id']);
-	            $item = pdo_fetch("SELECT * FROM " . tablename($this->modulename.'_mucate'). " WHERE uniacid = :uniacid and id = :id",array(':uniacid' => $_W['uniacid'],':id' => $id));
-	            include $this->template('editmucate');
-	        }
-	    }
-	    	    
-	}
-	public function doWebSeachmusic(){
-	    global $_W, $_GPC; 
-	    if($_W['ispost']){
-	        $keyword = strip_gpc($_GPC['musicname']);
-	        if (empty($keyword)) die('1');
-            load()->func('communication');            
+                if($ishere){
+                    $result = array(
+                        'result' => 1
+                    );
+                }else{
+                    $result = array(
+                        'result' => 0
+                    );
+                }
+                echo json_encode($result);
+            }elseif ($op== 'sysmusic'){
+                include_once 'public/arr.php';
+                $mid = pdo_fetchcolumn("SELECT id FROM" . tablename($this->modulename.'_mucate'). " WHERE oldtitle = :oldtitle and uniacid = :uniacid",array(':oldtitle' => '网络',':uniacid' => $_W['uniacid']));
+                $liuxing = pdo_fetchcolumn("SELECT id FROM" . tablename($this->modulename.'_mucate'). " WHERE oldtitle = :oldtitle and uniacid = :uniacid",array(':oldtitle' => '流行',':uniacid' => $_W['uniacid']));
+                $huaijiu = pdo_fetchcolumn("SELECT id FROM" . tablename($this->modulename.'_mucate'). " WHERE oldtitle = :oldtitle and uniacid = :uniacid",array(':oldtitle' => '怀旧',':uniacid' => $_W['uniacid']));
+                $qingyin = pdo_fetchcolumn("SELECT id FROM" . tablename($this->modulename.'_mucate'). " WHERE oldtitle = :oldtitle and uniacid = :uniacid",array(':oldtitle' => '纯音乐',':uniacid' => $_W['uniacid']));
+                if($mid){
+                    $music = unserialize(wangluo());
+                    for($i=0;$i<count($music);$i++){
+                        $title = pdo_fetchcolumn("SELECT count(*) FROM" . tablename($this->modulename.'_music') . " WHERE title = :title and uniacid = :uniacid",array('title' => $music[$i]['title'],':uniacid' => $_W['uniacid']));
+                        if(!$title){
+                            $music[$i]['uniacid'] = $_W['uniacid'];
+                            $music[$i]['addtime'] = TIMESTAMP;
+                            $music[$i]['type'] = $mid;
+                            pdo_insert($this->modulename.'_music',$music[$i]);
+                        }
+                    }
+                }
+                if($liuxing){
+                    $music = unserialize(liuxing());
+                    for($i=0;$i<count($music);$i++){
+                        $title = pdo_fetchcolumn("SELECT count(*) FROM" . tablename($this->modulename.'_music') . " WHERE title = :title and uniacid = :uniacid",array('title' => $music[$i]['title'],':uniacid' => $_W['uniacid']));
+                        if(!$title){
+                            $music[$i]['uniacid'] = $_W['uniacid'];
+                            $music[$i]['addtime'] = TIMESTAMP;
+                            $music[$i]['type'] = $liuxing;
+                            pdo_insert($this->modulename.'_music',$music[$i]);
+                        }
+                    }
+                }
+                if($huaijiu){
+                    $music = unserialize(huaijiu());
+                    for($i=0;$i<count($music);$i++){
+                        $title = pdo_fetchcolumn("SELECT count(*) FROM" . tablename($this->modulename.'_music') . " WHERE title = :title and uniacid = :uniacid",array('title' => $music[$i]['title'],':uniacid' => $_W['uniacid']));
+                        if(!$title){
+                            $music[$i]['uniacid'] = $_W['uniacid'];
+                            $music[$i]['addtime'] = TIMESTAMP;
+                            $music[$i]['type'] = $huaijiu;
+                            pdo_insert($this->modulename.'_music',$music[$i]);
+                        }
+                    }
+                }
+                if($qingyin){
+                    $music = unserialize(qingyin());
+                    for($i=0;$i<count($music);$i++){
+                        $title = pdo_fetchcolumn("SELECT count(*) FROM" . tablename($this->modulename.'_music') . " WHERE title = :title and uniacid = :uniacid",array('title' => $music[$i]['title'],':uniacid' => $_W['uniacid']));
+                        if(!$title){
+                            $music[$i]['uniacid'] = $_W['uniacid'];
+                            $music[$i]['addtime'] = TIMESTAMP;
+                            $music[$i]['type'] = $qingyin;
+                            pdo_insert($this->modulename.'_music',$music[$i]);
+                        }
+                    }
+                }
+                $data = array(
+                    'result' => 'success'
+                );
+                echo json_encode($data);
+            }elseif($op == 'delmusic'){
+                pdo_delete($this->modulename.'_music',array('uniacid' => $_W['uniacid']));
+                $data = array(
+                    'result' => 'success'
+                );
+                echo json_encode($data);
+            }
+        }else{
+            if($op == 'display'){
+                $cate = pdo_fetchall("SELECT id,title FROM" . tablename($this->modulename.'_mucate')." WHERE uniacid = :uniacid",array(':uniacid' => $_W['uniacid']),id);
+                $pindex = max(1, intval($_GPC['page']));
+                $psize = 15;
+                $list = pdo_fetchall("SELECT * FROM". tablename($this->modulename.'_music')." WHERE uniacid = :uniacid ORDER BY addtime DESC LIMIT ".($pindex - 1) * $psize.','.$psize,array(':uniacid' => $_W['uniacid']));
+                $total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename($this->modulename.'_music') . " WHERE uniacid = :did",array(':did' => $_W['uniacid']));
+                $pager = pagination($total, $pindex, $psize);
+                include $this->template('music');
+            }elseif ($op == 'edit'){
+                $id = intval($_GPC['id']);
+                $cate = pdo_fetchall("SELECT id,title FROM" . tablename($this->modulename.'_mucate')." WHERE uniacid = :uniacid",array(':uniacid' => $_W['uniacid']),id);
+                $music = pdo_fetch("SELECT * FROM" . tablename($this->modulename.'_music') . " WHERE id = :id",array(':id' => $id));
+                include $this->template('addmusic');
+            }
+        }
+    }
+    public function doWebMucate(){
+        global $_W, $_GPC;
+        $op = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
+        if($_W['ispost']){
+            if ($op == 'sysmucate'){
+                $mcate = array('网络','流行','怀旧','纯音乐','儿歌');
+                for($i=0;$i<count($mcate);$i++){
+                    $ishere = pdo_fetchcolumn('SELECT id FROM'.tablename($this->modulename.'_mucate')." WHERE uniacid = :uniacid and title = :title",array(":title" => $mcate[$i],":uniacid" => $_W['uniacid']));
+                    if(!$ishere){
+                        $data = array(
+                            'title' => $mcate[$i],
+                            'oldtitle' => $mcate[$i],
+                            'uniacid' => $_W['uniacid'],
+                            'addtime' => TIMESTAMP
+                        );
+                        $result = pdo_insert($this->modulename.'_mucate',$data);
+                    }
+                }
+                if($result){
+                    $msg = array(
+                        'result' => 'success'
+                    );
+                }else{
+                    $msg = array(
+                        'result' => '0'
+                    );
+                }
+                echo json_encode($msg);
+            }elseif ($op == 'delmucate'){
+                $id = intval($_GPC['id']);
+                $result  =  pdo_delete($this->modulename.'_mucate',array('uniacid' => $_W['uniacid'],'id' => $id));
+                if($result){
+                    $data = array(
+                        'result' => '1'
+                    );
+                }else{
+                    $data = array(
+                        'result' => '0'
+                    );
+                }
+                echo json_encode($data);
+            }elseif ($op == 'edit'){
+                $id = intval($_GPC['id']);
+                $title = strip_gpc($_GPC['title']);
+                $displayorder = intval($_GPC['displayorder']);
+                pdo_update($this->modulename."_mucate",array('displayorder' => $displayorder,'title' => $title),array('id' => $id,'uniacid' => $_W['uniacid']));
+                $this->message('音乐分类编辑成功！',$this->createWebUrl('mucate'));
+            }else{
+                $displayorder = $_GPC['displayorder'];
+                if (!empty($displayorder)) {
+                    foreach ($displayorder as $id => $dis) {
+                        if($dis){
+                            $update = array(
+                                'displayorder' => $dis
+                            );
+                            pdo_update($this->modulename.'_mucate', $update, array(
+                                'id' => $id
+                            ));
+                        }
+                    }
+                    $this->message('分类排序更新成功！', 'refresh', 'success');
+                }
+            }
+        }else{
+            if($op == 'display'){
+                $list = pdo_fetchall("SELECT * FROM" . tablename($this->modulename.'_mucate')." WHERE uniacid = :uniacid ORDER BY  displayorder DESC",array(":uniacid" => $_W['uniacid']));
+                include $this->template('mucate');
+            }elseif ($op == 'edit'){
+                $id = intval($_GPC['id']);
+                $item = pdo_fetch("SELECT * FROM " . tablename($this->modulename.'_mucate'). " WHERE uniacid = :uniacid and id = :id",array(':uniacid' => $_W['uniacid'],':id' => $id));
+                include $this->template('editmucate');
+            }
+        }
+
+    }
+    public function doWebSeachmusic(){
+        global $_W, $_GPC;
+        if($_W['ispost']){
+            $keyword = strip_gpc($_GPC['musicname']);
+            if (empty($keyword)) die('1');
+            load()->func('communication');
             $url = "https://auth-external.music.qq.com/open/fcgi-bin/fcg_weixin_music_search.fcg?remoteplace=txt.weixin.officialaccount&w={$keyword}&platform=weixin&perpage=15&curpage=1";
             $res = ihttp_get($url);
             $res = json_decode($res['content'],true);
             $list = $res['list'];
-            if(empty($list)) die('1');             
+            if(empty($list)) die('1');
             for($i=0;$i<count($list);$i++){
                 $list[$i]['m4a'] = str_replace('ws.stream.qqmusic.qq.com','dl.stream.qqmusic.qq.com',$list[$i]['m4a']);
                 $html .= '<tr><td class="text-left">'.$list[$i]['songname'].'</td><td class="text-left">'.$list[$i]['singername'].'</td><td><div class="link-group"><a class="plays" href="javascript:;" data-music="'.$list[$i]['m4a'].'">播放</a></div></td><td><div class="link-group"><a class="playsave" href="javascript:;" data-musicname="'.$list[$i]['songname'].'" data-singer="'.$list[$i]['singername'].'" data-music="'.$list[$i]['m4a'].'&lyric='.$list[$i]['id'].'">确定</a></div></td></tr>';
@@ -510,158 +510,158 @@ class Hr_albumModuleSite extends WeModuleSite {
                 'music' => '<table class="table we7-table table-hover vertical-middle we7-form"><col width="230px"/><col width="120px"/><col width="60px"/><col width="60px"/><tr><th class="text-left">歌曲名称</th><th class="text-left">歌手</th><th class="text-right">试听</th><th class="text-right">操作</th></tr>'.$html.'</table>'
             );
             echo json_encode($data);
-	    }else{
-	        include $this->template('seachmusic');
-	    }
-	}
-	public function doWebAddmusic(){
-	    global $_W, $_GPC;
-	    $op = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
-	    $cate = pdo_fetchall("SELECT * FROM" . tablename($this->modulename.'_mucate')." WHERE uniacid = :uniacid",array(':uniacid' => $_W['uniacid']));
-	    if($_W['ispost']){
-	        if($op == 'display'){
-	            $id = intval($_GPC['id']);
-	            $musictype = $_GPC['musictype'];
-	            if(!$musictype){
-	                message('请选择音乐分类！', $this->createWebUrl('music'), 'error');
-	            }
-	            $musictitle = $_GPC['musictitle'];
-	            $musicurl = $_GPC['musicurl'];
-	            $data = array(
-	                'type' => $musictype,
-	                'uniacid' => $_W['uniacid'],
-	                'title' => $musictitle,
-	                'singer' => strip_gpc($_GPC['singer']),
-	                'music' => $musicurl,
-	                'addtime' => TIMESTAMP
-	            );
-	            if($id){
-	                pdo_update($this->modulename.'_music',$data,array('uniacid' => $_W['uniacid'],'id' => $id));
-	                $this->message('音乐编辑成功！',$this->createWebUrl('music'));
-	            }else{
-	                pdo_insert($this->modulename.'_music',$data);
-	                $this->message('音乐添加成功！',$this->createWebUrl('music'));
-	            }
-	        }
-	    }else{
-	        if($op == 'display'){
-	            include $this->template('addmusic');
-	        }
-	    }
-	}
-	public function doWebAddmucate(){
-	    global $_W, $_GPC;
-	    if($_W['ispost']){
-	        $mucate = $_GPC['musictitle'];
-	        $displayorder = intval($_GPC['displayorder']);
-	        $data = array(
-	            'title' => $mucate,
-	            'uniacid' => $_W['uniacid'],
-	            'displayorder' => $displayorder,
-	            'addtime' => TIMESTAMP
-	        );
-	        pdo_insert($this->modulename.'_mucate',$data);
-	        $this->message('音乐分类添加成功！',$this->createWebUrl('music'));
-	    }else{
-	       include $this->template('addmucate');
-	    }
-	    
-	}
-	public function doWebSkin(){ 
-	    global $_W, $_GPC;
-	    $op = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
-	    $cfg = $this->module['config'];
-	    if($_W['ispost']){
-	        if($op == 'sysskin'){
-	            $skin = array(
-	                array(
-	                    'skintitle' => '蔷薇恋',
-	                    'skiname' => 'qiangwei',
-	                    'music' => 'http://dl.stream.qqmusic.qq.com/C1000003FhfU2GR1tu.m4a?fromtag=0',
+        }else{
+            include $this->template('seachmusic');
+        }
+    }
+    public function doWebAddmusic(){
+        global $_W, $_GPC;
+        $op = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
+        $cate = pdo_fetchall("SELECT * FROM" . tablename($this->modulename.'_mucate')." WHERE uniacid = :uniacid",array(':uniacid' => $_W['uniacid']));
+        if($_W['ispost']){
+            if($op == 'display'){
+                $id = intval($_GPC['id']);
+                $musictype = $_GPC['musictype'];
+                if(!$musictype){
+                    message('请选择音乐分类！', $this->createWebUrl('music'), 'error');
+                }
+                $musictitle = $_GPC['musictitle'];
+                $musicurl = $_GPC['musicurl'];
+                $data = array(
+                    'type' => $musictype,
+                    'uniacid' => $_W['uniacid'],
+                    'title' => $musictitle,
+                    'singer' => strip_gpc($_GPC['singer']),
+                    'music' => $musicurl,
+                    'addtime' => TIMESTAMP
+                );
+                if($id){
+                    pdo_update($this->modulename.'_music',$data,array('uniacid' => $_W['uniacid'],'id' => $id));
+                    $this->message('音乐编辑成功！',$this->createWebUrl('music'));
+                }else{
+                    pdo_insert($this->modulename.'_music',$data);
+                    $this->message('音乐添加成功！',$this->createWebUrl('music'));
+                }
+            }
+        }else{
+            if($op == 'display'){
+                include $this->template('addmusic');
+            }
+        }
+    }
+    public function doWebAddmucate(){
+        global $_W, $_GPC;
+        if($_W['ispost']){
+            $mucate = $_GPC['musictitle'];
+            $displayorder = intval($_GPC['displayorder']);
+            $data = array(
+                'title' => $mucate,
+                'uniacid' => $_W['uniacid'],
+                'displayorder' => $displayorder,
+                'addtime' => TIMESTAMP
+            );
+            pdo_insert($this->modulename.'_mucate',$data);
+            $this->message('音乐分类添加成功！',$this->createWebUrl('music'));
+        }else{
+            include $this->template('addmucate');
+        }
+
+    }
+    public function doWebSkin(){
+        global $_W, $_GPC;
+        $op = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
+        $cfg = $this->module['config'];
+        if($_W['ispost']){
+            if($op == 'sysskin'){
+                $skin = array(
+                    array(
+                        'skintitle' => '蔷薇恋',
+                        'skiname' => 'qiangwei',
+                        'music' => 'http://dl.stream.qqmusic.qq.com/C1000003FhfU2GR1tu.m4a?fromtag=0',
                         'cname' => '爱情'
-	                ),
-	                array(
-	                    'skintitle' => '钟爱一生',
-	                    'skiname' => 'rose',
-	                    'music' => 'http://dl.stream.qqmusic.qq.com/C100000KR71T0vs9Yp.m4a?fromtag=0',
+                    ),
+                    array(
+                        'skintitle' => '钟爱一生',
+                        'skiname' => 'rose',
+                        'music' => 'http://dl.stream.qqmusic.qq.com/C100000KR71T0vs9Yp.m4a?fromtag=0',
                         'cname' => '爱情'
-	                ),
-	                array(
-	                    'skintitle' => '童心未泯',
-	                    'skiname' => 'fengche',
-	                    'music' => 'http://dl.stream.qqmusic.qq.com/C100001McakF1axbfO.m4a?fromtag=0',
+                    ),
+                    array(
+                        'skintitle' => '童心未泯',
+                        'skiname' => 'fengche',
+                        'music' => 'http://dl.stream.qqmusic.qq.com/C100001McakF1axbfO.m4a?fromtag=0',
                         'cname' => '儿童'
-	                ),
-	                array(
-	                    'skintitle' => '时光放映机',
-	                    'skiname' => 'shiguang',
-	                    'music' => 'http://dl.stream.qqmusic.qq.com/C100004TSZYg2HaHQi.m4a?fromtag=0',
+                    ),
+                    array(
+                        'skintitle' => '时光放映机',
+                        'skiname' => 'shiguang',
+                        'music' => 'http://dl.stream.qqmusic.qq.com/C100004TSZYg2HaHQi.m4a?fromtag=0',
                         'cname' => '多图'
-	                ),
-	                array(
-	                    'skintitle' => '黎明清晨',
-	                    'skiname' => 'liming',
-	                    'music' => 'http://dl.stream.qqmusic.qq.com/C100001O8Fq6090GIP.m4a?fromtag=0',
+                    ),
+                    array(
+                        'skintitle' => '黎明清晨',
+                        'skiname' => 'liming',
+                        'music' => 'http://dl.stream.qqmusic.qq.com/C100001O8Fq6090GIP.m4a?fromtag=0',
                         'cname' => '多图'
-	                ),
-	                array(
-	                    'skintitle' => '冬日问候',
-	                    'skiname' => 'dongri',
-	                    'music' => 'http://dl.stream.qqmusic.qq.com/C100002OrhQA0bNYFg.m4a?fromtag=0',
+                    ),
+                    array(
+                        'skintitle' => '冬日问候',
+                        'skiname' => 'dongri',
+                        'music' => 'http://dl.stream.qqmusic.qq.com/C100002OrhQA0bNYFg.m4a?fromtag=0',
                         'cname' => '多图'
-	                ),
-	                array(
-	                    'skintitle' => '快乐圣诞',
-	                    'skiname' => 'shengdan1',
-	                    'music' => 'http://dl.stream.qqmusic.qq.com/C100002PlIV94B0l6I.m4a?fromtag=0',
+                    ),
+                    array(
+                        'skintitle' => '快乐圣诞',
+                        'skiname' => 'shengdan1',
+                        'music' => 'http://dl.stream.qqmusic.qq.com/C100002PlIV94B0l6I.m4a?fromtag=0',
                         'cname' => '节日'
-	                ),
-	                array(
-	                    'skintitle' => '圣诞快乐',
-	                    'skiname' => 'shengdan2',
-	                    'music' => 'http://dl.stream.qqmusic.qq.com/C100002lW91D2TL1UM.m4a?fromtag=0',
+                    ),
+                    array(
+                        'skintitle' => '圣诞快乐',
+                        'skiname' => 'shengdan2',
+                        'music' => 'http://dl.stream.qqmusic.qq.com/C100002lW91D2TL1UM.m4a?fromtag=0',
                         'cname' => '节日'
-	                ),
-	                array(
-	                    'skintitle' => '心说',
-	                    'skiname' => 'xinshuo',
-	                    'music' => 'http://dl.stream.qqmusic.qq.com/C1000035x1uO2pRBBS.m4a?fromtag=0',
+                    ),
+                    array(
+                        'skintitle' => '心说',
+                        'skiname' => 'xinshuo',
+                        'music' => 'http://dl.stream.qqmusic.qq.com/C1000035x1uO2pRBBS.m4a?fromtag=0',
                         'cname' => '爱情'
-	                ),
-	                array(
-	                    'skintitle' => '十里桃花',
-	                    'skiname' => 'taohua',
-	                    'music' => 'http://dl.stream.qqmusic.qq.com/C100001Nl0W80sBSwJ.m4a?fromtag=0',
+                    ),
+                    array(
+                        'skintitle' => '十里桃花',
+                        'skiname' => 'taohua',
+                        'music' => 'http://dl.stream.qqmusic.qq.com/C100001Nl0W80sBSwJ.m4a?fromtag=0',
                         'cname' => '爱情'
-	                ),
-	                array(
-	                    'skintitle' => '冰雪奇缘',
-	                    'skiname' => 'bingxue',
-	                    'music' => 'http://dl.stream.qqmusic.qq.com/C1000011bjAY09MJKk.m4a?fromtag=0',
+                    ),
+                    array(
+                        'skintitle' => '冰雪奇缘',
+                        'skiname' => 'bingxue',
+                        'music' => 'http://dl.stream.qqmusic.qq.com/C1000011bjAY09MJKk.m4a?fromtag=0',
                         'cname' => '多图'
-	                ), 
-	                array(
-	                    'skintitle' => '梦幻森林',
-	                    'skiname' => 'senlin',
-	                    'music' => 'http://dl.stream.qqmusic.qq.com/C100000amRvH3wxv56.m4a?fromtag=0',
+                    ),
+                    array(
+                        'skintitle' => '梦幻森林',
+                        'skiname' => 'senlin',
+                        'music' => 'http://dl.stream.qqmusic.qq.com/C100000amRvH3wxv56.m4a?fromtag=0',
                         'cname' => '多图'
-	                ),
-	                array(
-	                    'skintitle' => '小雪清寒',
-	                    'skiname' => 'xiaoxue',
-	                    'music' => 'http://dl.stream.qqmusic.qq.com/C100001qr2SW1q6AKQ.m4a?fromtag=0',
+                    ),
+                    array(
+                        'skintitle' => '小雪清寒',
+                        'skiname' => 'xiaoxue',
+                        'music' => 'http://dl.stream.qqmusic.qq.com/C100001qr2SW1q6AKQ.m4a?fromtag=0',
                         'cname' => '多图'
-	                ),array(
-	                    'skintitle' => '春节快乐',
-	                    'skiname' => 'chunjie',
-	                    'music' => 'http://dl.stream.qqmusic.qq.com/C100001PFFK20X95aT.m4a?fromtag=0',
+                    ),array(
+                        'skintitle' => '春节快乐',
+                        'skiname' => 'chunjie',
+                        'music' => 'http://dl.stream.qqmusic.qq.com/C100001PFFK20X95aT.m4a?fromtag=0',
                         'cname' => '节日'
-	                ),array(
-	                    'skintitle' => '春节快乐',
-	                    'skiname' => 'xinnian',
-	                    'music' => 'http://dl.stream.qqmusic.qq.com/C100001PFFK20X95aT.m4a?fromtag=0',
+                    ),array(
+                        'skintitle' => '春节快乐',
+                        'skiname' => 'xinnian',
+                        'music' => 'http://dl.stream.qqmusic.qq.com/C100001PFFK20X95aT.m4a?fromtag=0',
                         'cname' => '节日'
-	                ),array(
+                    ),array(
                         'skintitle' => '春暖花开',
                         'skiname' => 'hualuo',
                         'music' => 'http://dl.stream.qqmusic.qq.com/C100004TXEXY2G2c7C.m4a?fromtag=0',
@@ -682,15 +682,15 @@ class Hr_albumModuleSite extends WeModuleSite {
                         'music' => 'http://dl.stream.qqmusic.qq.com/C1000006tWxy0mUp7s.m4a?fromtag=46&lyric=4829898',
                         'cname' => '儿童'
                     ),array(
-                    'skintitle' => '感恩有你',
-                    'skiname' => 'ganen2',
-                    'music' => 'http://dl.stream.qqmusic.qq.com/C100002THbyZ1Efzd5.m4a?fromtag=46&lyric=107660564',
-                    'cname' => '多图'
+                        'skintitle' => '感恩有你',
+                        'skiname' => 'ganen2',
+                        'music' => 'http://dl.stream.qqmusic.qq.com/C100002THbyZ1Efzd5.m4a?fromtag=46&lyric=107660564',
+                        'cname' => '多图'
                     ),array(
-                            'skintitle' => '古韵荷花',
-                            'skiname' => 'guyun',
-                            'music' => 'http://dl.stream.qqmusic.qq.com/C100002THbyZ1Efzd5.m4a?fromtag=46&lyric=107660564',
-                            'cname' => '多图'
+                        'skintitle' => '古韵荷花',
+                        'skiname' => 'guyun',
+                        'music' => 'http://dl.stream.qqmusic.qq.com/C100002THbyZ1Efzd5.m4a?fromtag=46&lyric=107660564',
+                        'cname' => '多图'
                     ),array(
                         'skintitle' => '阳光宝贝',
                         'skiname' => 'baobei',
@@ -723,11 +723,11 @@ class Hr_albumModuleSite extends WeModuleSite {
                         'music' => 'http://dl.stream.qqmusic.qq.com/C100000dWjyk4G5V6k.m4a?fromtag=46&lyric=2460009',
                         'cname' => '多图'
                     ),array(
-                    'skintitle' => '暮色烟云',
-                    'skiname' => 'yunyan',
-                    'music' => 'http://dl.stream.qqmusic.qq.com/C100000dWjyk4G5V6k.m4a?fromtag=46&lyric=2460009',
-                    'cname' => '多图'
-                ),array(
+                        'skintitle' => '暮色烟云',
+                        'skiname' => 'yunyan',
+                        'music' => 'http://dl.stream.qqmusic.qq.com/C100000dWjyk4G5V6k.m4a?fromtag=46&lyric=2460009',
+                        'cname' => '多图'
+                    ),array(
                         'skintitle' => '玫瑰之恋',
                         'skiname' => 'ailian',
                         'music' => 'http://dl.stream.qqmusic.qq.com/C100000aVpHR3FrRPY.m4a?fromtag=46&lyric=4830166',
@@ -788,60 +788,60 @@ class Hr_albumModuleSite extends WeModuleSite {
                         'music' => 'http://dl.stream.qqmusic.qq.com/C100004TFRgJ1O1PrK.m4a?fromtag=46&lyric=110211',
                         'cname' => '多图'
                     )
-	            );
-	            for($i=0;$i<count($skin);$i++){
-	                $ishere = pdo_fetchcolumn('SELECT id FROM'.tablename($this->modulename.'_skin')." WHERE uniacid = :uniacid and skiname = :skiname",array(":skiname" => $skin[$i]['skiname'],":uniacid" => $_W['uniacid']));
-	                if(!$ishere){
-	                    $cid = pdo_fetchcolumn('SELECT id FROM'.tablename($this->modulename.'_skincate').' where uniacid = :uniacid and title = :title',array(':uniacid' => $_W['uniacid'],':title' => $skin[$i]['cname']));
-	                    if(!$cid){
-	                        $cid = 0;
+                );
+                for($i=0;$i<count($skin);$i++){
+                    $ishere = pdo_fetchcolumn('SELECT id FROM'.tablename($this->modulename.'_skin')." WHERE uniacid = :uniacid and skiname = :skiname",array(":skiname" => $skin[$i]['skiname'],":uniacid" => $_W['uniacid']));
+                    if(!$ishere){
+                        $cid = pdo_fetchcolumn('SELECT id FROM'.tablename($this->modulename.'_skincate').' where uniacid = :uniacid and title = :title',array(':uniacid' => $_W['uniacid'],':title' => $skin[$i]['cname']));
+                        if(!$cid){
+                            $cid = 0;
                         }
-	                    $data = array(
-	                        'skintitle' => $skin[$i]['skintitle'],
-	                        'skiname' => $skin[$i]['skiname'],
-	                        'music' => $skin[$i]['music'],
-	                        'cid' => $cid,
-	                        'uniacid' => $_W['uniacid'],
-	                        'addtime' => TIMESTAMP
-	                    );
-	                    pdo_insert($this->modulename.'_skin',$data);
-	                    $result = pdo_insertid();
-	                }
-	            }
-	            if($result){
-	                $msg = array(
-	                    'result' => 'success'
-	                );
-	            }else{
-	                $msg = array(
-	                    'result' => '0'
-	                );
-	            }
-	            echo json_encode($msg);
-	        }elseif ($op == 'edit'){
-	            $data = array(
-	                'displayorder' => intval($_GPC['displayorder']),
-	                'skintitle' => strip_gpc($_GPC['skintitle']),
-	                'music' => $_GPC['musicurl'],
-	                'cid' => intval($_GPC['cate']),
-	                'ishot' => intval($_GPC['ishot']),
-	                'addtime' => TIMESTAMP
-	            );
-	            pdo_update($this->modulename.'_skin',$data,array('uniacid' => $_W['uniacid'],'id' => intval($_GPC['id'])));
-	            $this->message('模板编辑成功！',$this->createWebUrl('skin'));
-	        }elseif($op == 'resskin'){
-	            $result = pdo_update($this->modulename.'_skin',array('remoted' => 0),array('uniacid' => $_W['uniacid']));
-	            if($result){
-	                $msg = array(
-	                    'result' => 'success'
-	                );
-	            }else{
-	                $msg = array(
-	                    'result' => '0'
-	                );
-	            }
-	            echo json_encode($msg);
-	        }elseif($op == 'delskin'){
+                        $data = array(
+                            'skintitle' => $skin[$i]['skintitle'],
+                            'skiname' => $skin[$i]['skiname'],
+                            'music' => $skin[$i]['music'],
+                            'cid' => $cid,
+                            'uniacid' => $_W['uniacid'],
+                            'addtime' => TIMESTAMP
+                        );
+                        pdo_insert($this->modulename.'_skin',$data);
+                        $result = pdo_insertid();
+                    }
+                }
+                if($result){
+                    $msg = array(
+                        'result' => 'success'
+                    );
+                }else{
+                    $msg = array(
+                        'result' => '0'
+                    );
+                }
+                echo json_encode($msg);
+            }elseif ($op == 'edit'){
+                $data = array(
+                    'displayorder' => intval($_GPC['displayorder']),
+                    'skintitle' => strip_gpc($_GPC['skintitle']),
+                    'music' => $_GPC['musicurl'],
+                    'cid' => intval($_GPC['cate']),
+                    'ishot' => intval($_GPC['ishot']),
+                    'addtime' => TIMESTAMP
+                );
+                pdo_update($this->modulename.'_skin',$data,array('uniacid' => $_W['uniacid'],'id' => intval($_GPC['id'])));
+                $this->message('模板编辑成功！',$this->createWebUrl('skin'));
+            }elseif($op == 'resskin'){
+                $result = pdo_update($this->modulename.'_skin',array('remoted' => 0),array('uniacid' => $_W['uniacid']));
+                if($result){
+                    $msg = array(
+                        'result' => 'success'
+                    );
+                }else{
+                    $msg = array(
+                        'result' => '0'
+                    );
+                }
+                echo json_encode($msg);
+            }elseif($op == 'delskin'){
                 $id = $_GPC['id'];
                 pdo_delete($this->modulename.'_skin',array('id' => $id,'uniacid' => $_W['uniacid']));
                 $msg = array(
@@ -849,85 +849,85 @@ class Hr_albumModuleSite extends WeModuleSite {
                 );
                 echo json_encode($msg);
             }
-	    }else{
-	        if($op == 'display'){
-	            $cate = pdo_fetchall("SELECT id,title FROM" . tablename($this->modulename.'_skincate')." WHERE uniacid = :uniacid",array(':uniacid' => $_W['uniacid']),id);
-	            $pindex = max(1, intval($_GPC['page']));
-	            $psize = 15;	            
-	            $list = pdo_fetchall("SELECT * FROM". tablename($this->modulename.'_skin')." WHERE uniacid = :uniacid ORDER BY addtime DESC LIMIT ".($pindex - 1) * $psize.','.$psize,array(':uniacid' => $_W['uniacid']));
-	            $total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename($this->modulename.'_skin') . " WHERE uniacid = :did",array(':did' => $_W['uniacid']));
-	            $pager = pagination($total, $pindex, $psize);
-	            include $this->template('skin');
-	        }elseif($op == 'edit'){
-	            $id = intval($_GPC['id']);
-	            $item = pdo_fetch("SELECT * FROM".tablename($this->modulename.'_skin'). " WHERE uniacid = :uniacid and id = :id",array(':uniacid' => $_W['uniacid'],':id' => $id));
-	            $cate = pdo_fetchall("SELECT id,title FROM" . tablename($this->modulename.'_skincate')." WHERE uniacid = :uniacid",array(':uniacid' => $_W['uniacid']),id);
-	            include $this->template('editskin');
-	        }
-	    }	    
-	}
-	public function doWebSkincate(){
-	    global $_W, $_GPC;
-	    $op = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
-	    if($_W['ispost']){
-	        if($op == 'syscate'){
-	            $skinarr = array('爱情','儿童','节日','多图');
-	            for($i=0;$i<count($skinarr);$i++){
-	                $ishere = pdo_fetchcolumn('SELECT id FROM'.tablename($this->modulename.'_skincate')." WHERE uniacid = :uniacid and title = :title",array(":title" => $skinarr[$i],":uniacid" => $_W['uniacid']));
-	                if(!$ishere){
-	                    $data = array(
-	                        'title' => $skinarr[$i],
-	                        'uniacid' => $_W['uniacid'],
-	                        'addtime' => TIMESTAMP
-	                    );
-	                    $result = pdo_insert($this->modulename.'_skincate',$data);
-	                }
-	            }
-	            if($result){
-	                $msg = array(
-	                    'result' => 'success'
-	                );
-	            }else{
-	                $msg = array(
-	                    'result' => '0'
-	                );
-	            }
-	            echo json_encode($msg);
-	        }elseif ($op == 'edit'){
-	            $id = intval($_GPC['id']);
-	            $title = strip_gpc($_GPC['title']);
-	            $displayorder = intval($_GPC['displayorder']);
-	            pdo_update($this->modulename."_skincate",array('displayorder' => $displayorder,'title' => $title),array('id' => $id,'uniacid' => $_W['uniacid']));
-	            $this->message('模板分类编辑成功！',$this->createWebUrl('skincate'));
-	        }else{
-	            $displayorder = $_GPC['displayorder'];
-	            if (!empty($displayorder)) {
-	                foreach ($displayorder as $id => $dis) {
-	                    if($dis){
-	                        $update = array(
-	                            'displayorder' => $dis
-	                        );
-	                        pdo_update($this->modulename.'_skincate', $update, array(
-	                            'id' => $id
-	                        ));
-	                    }
-	                }
-	                $this->message('分类排序更新成功！', 'refresh', 'success');
-	            }
-	        }
-	    }else{
-	        if($op == 'display'){
-	            $list = pdo_fetchall("SELECT * FROM" . tablename($this->modulename.'_skincate')." WHERE uniacid = :uniacid ORDER BY  displayorder DESC",array(":uniacid" => $_W['uniacid']));
-	            include $this->template('skincate');
-	        }elseif($op == 'edit'){
-	            $id = intval($_GPC['id']);
-	            $item = pdo_fetch("SELECT * FROM " . tablename($this->modulename.'_skincate'). " WHERE uniacid = :uniacid and id = :id",array(':uniacid' => $_W['uniacid'],':id' => $id));
-	            include $this->template('editskincate');
-	        }
-	        
-	    }
-	}
-public function doWebuser(){
+        }else{
+            if($op == 'display'){
+                $cate = pdo_fetchall("SELECT id,title FROM" . tablename($this->modulename.'_skincate')." WHERE uniacid = :uniacid",array(':uniacid' => $_W['uniacid']),id);
+                $pindex = max(1, intval($_GPC['page']));
+                $psize = 15;
+                $list = pdo_fetchall("SELECT * FROM". tablename($this->modulename.'_skin')." WHERE uniacid = :uniacid ORDER BY addtime DESC LIMIT ".($pindex - 1) * $psize.','.$psize,array(':uniacid' => $_W['uniacid']));
+                $total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename($this->modulename.'_skin') . " WHERE uniacid = :did",array(':did' => $_W['uniacid']));
+                $pager = pagination($total, $pindex, $psize);
+                include $this->template('skin');
+            }elseif($op == 'edit'){
+                $id = intval($_GPC['id']);
+                $item = pdo_fetch("SELECT * FROM".tablename($this->modulename.'_skin'). " WHERE uniacid = :uniacid and id = :id",array(':uniacid' => $_W['uniacid'],':id' => $id));
+                $cate = pdo_fetchall("SELECT id,title FROM" . tablename($this->modulename.'_skincate')." WHERE uniacid = :uniacid",array(':uniacid' => $_W['uniacid']),id);
+                include $this->template('editskin');
+            }
+        }
+    }
+    public function doWebSkincate(){
+        global $_W, $_GPC;
+        $op = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
+        if($_W['ispost']){
+            if($op == 'syscate'){
+                $skinarr = array('爱情','儿童','节日','多图');
+                for($i=0;$i<count($skinarr);$i++){
+                    $ishere = pdo_fetchcolumn('SELECT id FROM'.tablename($this->modulename.'_skincate')." WHERE uniacid = :uniacid and title = :title",array(":title" => $skinarr[$i],":uniacid" => $_W['uniacid']));
+                    if(!$ishere){
+                        $data = array(
+                            'title' => $skinarr[$i],
+                            'uniacid' => $_W['uniacid'],
+                            'addtime' => TIMESTAMP
+                        );
+                        $result = pdo_insert($this->modulename.'_skincate',$data);
+                    }
+                }
+                if($result){
+                    $msg = array(
+                        'result' => 'success'
+                    );
+                }else{
+                    $msg = array(
+                        'result' => '0'
+                    );
+                }
+                echo json_encode($msg);
+            }elseif ($op == 'edit'){
+                $id = intval($_GPC['id']);
+                $title = strip_gpc($_GPC['title']);
+                $displayorder = intval($_GPC['displayorder']);
+                pdo_update($this->modulename."_skincate",array('displayorder' => $displayorder,'title' => $title),array('id' => $id,'uniacid' => $_W['uniacid']));
+                $this->message('模板分类编辑成功！',$this->createWebUrl('skincate'));
+            }else{
+                $displayorder = $_GPC['displayorder'];
+                if (!empty($displayorder)) {
+                    foreach ($displayorder as $id => $dis) {
+                        if($dis){
+                            $update = array(
+                                'displayorder' => $dis
+                            );
+                            pdo_update($this->modulename.'_skincate', $update, array(
+                                'id' => $id
+                            ));
+                        }
+                    }
+                    $this->message('分类排序更新成功！', 'refresh', 'success');
+                }
+            }
+        }else{
+            if($op == 'display'){
+                $list = pdo_fetchall("SELECT * FROM" . tablename($this->modulename.'_skincate')." WHERE uniacid = :uniacid ORDER BY  displayorder DESC",array(":uniacid" => $_W['uniacid']));
+                include $this->template('skincate');
+            }elseif($op == 'edit'){
+                $id = intval($_GPC['id']);
+                $item = pdo_fetch("SELECT * FROM " . tablename($this->modulename.'_skincate'). " WHERE uniacid = :uniacid and id = :id",array(':uniacid' => $_W['uniacid'],':id' => $id));
+                include $this->template('editskincate');
+            }
+
+        }
+    }
+    public function doWebuser(){
         global $_W, $_GPC;
         $op = $_GPC['op'];
         if($_W['ispost']){
@@ -942,15 +942,15 @@ public function doWebuser(){
                 echo json_encode($data);
             }
             elseif($op == 'deluser'){
-              $openid = $_GPC['id'];
-              pdo_delete($this->modulename.'_data',array('openid' => $openid,'uniacid' => $_W['uniacid']));
-              $result = pdo_delete($this->modulename.'_user',array('openid' => $openid,'uniacid' => $_W['uniacid']));
-              if($result){
-                  $data = array(
-                      'result' => $result
-                  );
-                  echo json_encode($data);
-              }
+                $openid = $_GPC['id'];
+                pdo_delete($this->modulename.'_data',array('openid' => $openid,'uniacid' => $_W['uniacid']));
+                $result = pdo_delete($this->modulename.'_user',array('openid' => $openid,'uniacid' => $_W['uniacid']));
+                if($result){
+                    $data = array(
+                        'result' => $result
+                    );
+                    echo json_encode($data);
+                }
             }
             elseif($op == 'keyword'){
                 $keyword = $_GPC['keyword'];
@@ -1007,7 +1007,7 @@ public function doWebuser(){
                 $pager = pagination($total, $pindex, $psize);
                 include $this->template('user');
             }
-            
+
         }
     }
     public function doWebShowpic(){
@@ -1033,31 +1033,31 @@ public function doWebuser(){
             echo json_encode($json);
         }
     }
-	public  function doWebList(){
-	    global $_W, $_GPC;
-	    $op = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
+    public  function doWebList(){
+        global $_W, $_GPC;
+        $op = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
         $cfg = $this->module['config'];
-	    if($_W['ispost']){
-	        if($op == 'delpic'){ 
-	            $id = intval($_GPC['pid']);
-	            $picurl = strip_gpc($_GPC['src']);
-	            if($cfg['remote']['type'] == '3'){
+        if($_W['ispost']){
+            if($op == 'delpic'){
+                $id = intval($_GPC['pid']);
+                $picurl = strip_gpc($_GPC['src']);
+                if($cfg['remote']['type'] == '3'){
                     $this->delqiniu($picurl);
                 }
-	            $pics = pdo_fetchcolumn("SELECT content FROM".tablename($this->modulename.'_data') . " WHERE id = :id and uniacid = :uniacid ",array(':id' => $id,':uniacid' => $_W['uniacid']));
-	            $pics = unserialize($pics);
-	            for($i=0;$i<count($pics);$i++){
-	                if(strstr($picurl, $pics[$i]['pics'])){
-	                    array_splice($pics,$i,1);
-	                }
-	            }
-	            $pics = serialize($pics);
-	            pdo_update($this->modulename."_data",array('content' => $pics),array('id' => $id));
-	            $res = array(
-	                'result' => 'success'
-	            );
-	            echo json_encode($res);
-	        }elseif ($op == 'keyword'){
+                $pics = pdo_fetchcolumn("SELECT content FROM".tablename($this->modulename.'_data') . " WHERE id = :id and uniacid = :uniacid ",array(':id' => $id,':uniacid' => $_W['uniacid']));
+                $pics = unserialize($pics);
+                for($i=0;$i<count($pics);$i++){
+                    if(strstr($picurl, $pics[$i]['pics'])){
+                        array_splice($pics,$i,1);
+                    }
+                }
+                $pics = serialize($pics);
+                pdo_update($this->modulename."_data",array('content' => $pics),array('id' => $id));
+                $res = array(
+                    'result' => 'success'
+                );
+                echo json_encode($res);
+            }elseif ($op == 'keyword'){
                 $keyword = strip_gpc($_GPC['keyword']);
                 $list = pdo_fetchall("SELECT id,openid,title,content,isverify,click,share,best,addtime FROM". tablename($this->modulename.'_data')."  WHERE uniacid = :uniacid and title LIKE :keyword order by addtime DESC",array(':uniacid' => $_W['uniacid'],':keyword' => '%'.$keyword.'%'));
                 for($i=0;$i<count($list);$i++){
@@ -1079,16 +1079,16 @@ public function doWebuser(){
                 );
                 echo json_encode($data);
             }elseif($op == 'shenhe'){
-	           $id = $_GPC['id'];
-	           $isshow = $_GPC['val'];
-	           pdo_update($this->modulename.'_data',array('isshow' => $isshow),array('id' => $id,'uniacid' => $_W['uniacid']));
-	           $data = array(
-	               'result' =>1
-               );
-	           exit(json_encode($data));
-	        }
+                $id = $_GPC['id'];
+                $isshow = $_GPC['val'];
+                pdo_update($this->modulename.'_data',array('isshow' => $isshow),array('id' => $id,'uniacid' => $_W['uniacid']));
+                $data = array(
+                    'result' =>1
+                );
+                exit(json_encode($data));
+            }
             else{
-                $id = intval($_GPC['id']);                
+                $id = intval($_GPC['id']);
                 $rs = pdo_delete($this->modulename.'_data',array('id' => $id,'uniacid' => $_W['uniacid']));
                 if($rs){
                     $data = array(
@@ -1101,32 +1101,32 @@ public function doWebuser(){
                 }
                 echo json_encode($data);
             }
-	    }else{
-	        $pindex = max(1, intval($_GPC['page']));
-	        $psize = 15;
-	        $openid = $_GPC['mid'];
-	        $cfg = $this->module['config'];
-	        $verify = $cfg['verify'];
-	        $isshare = $cfg['ishare'];
-	        if($openid){
-	            $list = pdo_fetchall("SELECT id,openid,title,content,isshow,isverify,click,share,best,addtime FROM". tablename($this->modulename.'_data')."  WHERE uniacid = :uniacid and openid = :openid order by addtime DESC LIMIT ".($pindex - 1) * $psize.','.$psize,array(':uniacid' => $_W['uniacid'],':openid' => $openid));
-	            $total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename($this->modulename.'_data') . " WHERE uniacid = :did and openid = :openid",array(':did' => $_W['uniacid'],':openid' => $openid));
-	        }else{
-	            $list = pdo_fetchall("SELECT * FROM". tablename($this->modulename.'_data')." WHERE uniacid = :uniacid order by addtime DESC LIMIT ".($pindex - 1) * $psize.','.$psize,array(':uniacid' => $_W['uniacid']));
-	            $total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename($this->modulename.'_data') . " WHERE uniacid = :did",array(':did' => $_W['uniacid']));
-	        }
-	        
-	        for($i=0;$i<count($list);$i++){	           
-	            $thumb = unserialize($list[$i]['content']);
-	            for($j=0;$j<count($thumb);$j++){
-	                $list[$i]['piced'][$j] = $this->imgurl().trim($thumb[$j]['pics']);
-	            }
-	             
-	        }
-	        $pager = pagination($total, $pindex, $psize);
-	        include $this->template('list');
-	    }
-	}
+        }else{
+            $pindex = max(1, intval($_GPC['page']));
+            $psize = 15;
+            $openid = $_GPC['mid'];
+            $cfg = $this->module['config'];
+            $verify = $cfg['verify'];
+            $isshare = $cfg['ishare'];
+            if($openid){
+                $list = pdo_fetchall("SELECT id,openid,title,content,isshow,isverify,click,share,best,addtime FROM". tablename($this->modulename.'_data')."  WHERE uniacid = :uniacid and openid = :openid order by addtime DESC LIMIT ".($pindex - 1) * $psize.','.$psize,array(':uniacid' => $_W['uniacid'],':openid' => $openid));
+                $total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename($this->modulename.'_data') . " WHERE uniacid = :did and openid = :openid",array(':did' => $_W['uniacid'],':openid' => $openid));
+            }else{
+                $list = pdo_fetchall("SELECT * FROM". tablename($this->modulename.'_data')." WHERE uniacid = :uniacid order by addtime DESC LIMIT ".($pindex - 1) * $psize.','.$psize,array(':uniacid' => $_W['uniacid']));
+                $total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename($this->modulename.'_data') . " WHERE uniacid = :did",array(':did' => $_W['uniacid']));
+            }
+
+            for($i=0;$i<count($list);$i++){
+                $thumb = unserialize($list[$i]['content']);
+                for($j=0;$j<count($thumb);$j++){
+                    $list[$i]['piced'][$j] = $this->imgurl().trim($thumb[$j]['pics']);
+                }
+
+            }
+            $pager = pagination($total, $pindex, $psize);
+            include $this->template('list');
+        }
+    }
     public function doWebPhotos(){
         global $_W, $_GPC;
         $imgurl = $this->imgurl();
@@ -1142,12 +1142,12 @@ public function doWebuser(){
                 $thumbs[$num]['pics'] = $imgurl.trim($thumb[$j]['pics']);
                 $num++;
             }
-             
+
         }
         $total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename($this->modulename.'_data') . " WHERE uniacid = :did",array(':did' => $_W['uniacid']));
         $pager = pagination($total, $pindex, $psize);
         include $this->template('photos');
-    }    
+    }
     public function  doWebDownskin(){
         global $_W,$_GPC;
         if($_W['ispost']){
@@ -1195,7 +1195,7 @@ public function doWebuser(){
             for($i=0;$i<count($result);$i++){
                 $filename = 'skin/'.$skin.'/'.$result[$i];
                 $rs = $this->remote_skin_upload($filename, $cfg['remote']);
-                
+
             }
         }
         if($rs){
@@ -1208,20 +1208,20 @@ public function doWebuser(){
                 'result' => 'error'
             );
         }
-        echo json_encode($data);       
+        echo json_encode($data);
     }
     public function  doWebIsharedo(){
         global $_W,$_GPC;
         if($_W['ispost']){
-             $id = intval($_GPC['id']);
-             $result = pdo_update($this->modulename.'_data',array('isshow' => 1),array('id' => $id,'uniacid' => $_W['uniacid']));
-             if($result){
-                 pdo_delete($this->modulename.'_review',array('id' => $id));
-             }
-             $data = array(
-                 'result' => 1
-             );
-             echo json_encode($data);             
+            $id = intval($_GPC['id']);
+            $result = pdo_update($this->modulename.'_data',array('isshow' => 1),array('id' => $id,'uniacid' => $_W['uniacid']));
+            if($result){
+                pdo_delete($this->modulename.'_review',array('id' => $id));
+            }
+            $data = array(
+                'result' => 1
+            );
+            echo json_encode($data);
         }else{
             $pindex = max(1, intval($_GPC['page']));
             $psize = 20;
@@ -1229,12 +1229,12 @@ public function doWebuser(){
             $total = pdo_fetchcolumn("SELECT count(*) FROM".tablename($this->modulename.'_review')." WHERE uniacid = :uniacid",array(':uniacid' => $_W['uniacid']));
             $pager = pagination($total, $pindex, $psize);
             for($i=0;$i<count($list);$i++){
-	            $thumb = unserialize($list[$i]['content']);
-	            for($j=0;$j<count($thumb);$j++){
-	                $list[$i]['piced'][$j] = $this->imgurl().trim($thumb[$j]['pics']);
-	            }
-	             
-	        }
+                $thumb = unserialize($list[$i]['content']);
+                for($j=0;$j<count($thumb);$j++){
+                    $list[$i]['piced'][$j] = $this->imgurl().trim($thumb[$j]['pics']);
+                }
+
+            }
             include $this->template('isharedo');
         }
     }
@@ -1290,7 +1290,7 @@ public function doWebuser(){
                 $id = intval($_GPC['id']);
                 if($id){
                     $item = pdo_fetch("SELECT * FROM".tablename($this->modulename.'_school_class').' WHERE id = :id',array(':id' => $id));
-                }                
+                }
                 include $this->template('addschool');
             }else{
                 $list = pdo_fetchall("SELECT * FROM".tablename($this->modulename.'_school_class'));
@@ -1414,13 +1414,13 @@ public function doWebuser(){
             }elseif ($op == 'cash'){
                 $id = intval($_GPC['id']);
                 $service = pdo_fetchcolumn("SELECT service FROM".tablename($this->modulename.'_paydata')." WHERE uniacid = :uniacid",array(':uniacid' => $_W['uniacid']));
-                $cash = pdo_fetch("SELECT * FROM".tablename($this->modulename.'_cashpay')." WHERE uniacid = :uniacid and id = :id",array("id" => $id,":uniacid" => $_W['uniacid']));      
-                $realmoney = $cash['rcost']; 
+                $cash = pdo_fetch("SELECT * FROM".tablename($this->modulename.'_cashpay')." WHERE uniacid = :uniacid and id = :id",array("id" => $id,":uniacid" => $_W['uniacid']));
+                $realmoney = $cash['rcost'];
                 if($realmoney < 1){
                     $realmoney = 1;
                 }
-                $openid = $cash['openid']; 
-                $mhid = $_W['account']['setting']['payment']['wechat']['mchid'];                
+                $openid = $cash['openid'];
+                $mhid = $_W['account']['setting']['payment']['wechat']['mchid'];
                 if(!$mhid){
                     $this->message('请先设置商户信息！', 'refresh', 'error');
                     exit();
@@ -1461,7 +1461,7 @@ public function doWebuser(){
                 $data = array(
                     'result' => 'success'
                 );
-                return json_encode($data); 
+                return json_encode($data);
             }
         }else{
             if($op == 'display'){
@@ -1502,7 +1502,7 @@ public function doWebuser(){
                 $pager = pagination($total, $pindex, $psize);
                 include $this->template('paylog');
             }
-        }        
+        }
     }
     /*提现支付*/
     function _isPrivate($ip) {
@@ -1703,7 +1703,7 @@ public function doWebuser(){
                     );
                 }
                 echo json_encode($msg);
-                
+
             }elseif ($op == 'add'){
                 $id = $_GPC['id'];
                 $data = array(

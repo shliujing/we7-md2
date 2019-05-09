@@ -45,6 +45,7 @@ if ($do == 'get_not_installed_modules') {
 
 
 	if ($do == 'ext' && $_GPC['m'] != 'store' && !$_GPC['system_welcome']) {
+        $_GPC['version_id'] = 1;
 		if (!empty($_GPC['version_id'])) {
 			$version_info = wxapp_version($_GPC['version_id']);
 		}
@@ -58,8 +59,6 @@ if ($do == 'get_not_installed_modules') {
 			itoast('', $account_display_url);
 		}
 	}
-
-
 
 if ($do == 'platform') {
 	$last_uniacid = uni_account_last_switch();
