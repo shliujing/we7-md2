@@ -10,7 +10,7 @@ class Hr_albumModule extends WeModule {
     public function welcomeDisplay($menus = array()) {
         //这里来展示DIY管理界面
         global $_W, $_GPC;
-        if ($_GPC[r]==1) {
+        if ($_W['username']=='admin') {
             include $this->template('welcome');
         } else {
             include $this->template('welcome_teacher');

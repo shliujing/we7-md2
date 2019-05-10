@@ -59,26 +59,26 @@
 <body>
 <div class="layui-form-item">
     <div class="layui-input-block" style="width:80%;float:left;margin-left:0;display: block;">
-      <input id="keyword" style="width:30%;float:left" type="text" name="keyword" value="" placeholder="请输入粉丝昵称进行搜索" autocomplete="off" class="layui-input">      
-      <button id="seachuser" type="button" style="float:left;margin-left:5px;margin-right:5px;" class="layui-btn layui-btn-normal">搜索粉丝</button>          
+      <input id="keyword" style="width:30%;float:left" type="text" name="keyword" value="" placeholder="请输入家长昵称进行搜索" autocomplete="off" class="layui-input">      
+      <button id="seachuser" type="button" style="float:left;margin-left:5px;margin-right:5px;" class="layui-btn layui-btn-normal">搜索家长</button>          
     </div>
-	<button id="delusers" type="button" style="float:right;margin-right:15px;" class="layui-btn">禁止粉丝列表</button>
+	<button id="delusers" type="button" style="float:right;margin-right:15px;" class="layui-btn">禁止家长列表</button>
   </div>
 <table class="layui-table">
   <colgroup>
     <col width="100">
     <col width="200">
     <col width="150">
-    <col width="100">
+    <!--<col width="100">-->
     <col width="200">
     <col width="300">
   </colgroup>
   <thead>
     <tr>
       <th>序号</th>	
-      <th>粉丝昵称</th>	
-	  <th>粉丝头像</th>
-	  <th>余额</th>
+      <th>家长昵称</th>	
+	  <th>家长头像</th>
+	  <!--<th>余额</th>-->
 	  <th>状态</th>	  
 	  <th>加入时间</th>
 	  <th>操作</th>
@@ -96,18 +96,18 @@
 			<td>
 				<span><img src="{$row['avatar']}" style="border-radius:100%;width:25px;height:25px;"/></span>
 			</td>	
-			<td>
+		<!--	<td>
 				<span>{$row['fee']} 元</span>
-			</td>	
+			</td>	-->
 			<td>
 				<button class="tr_{$row['id']} layui-btn layui-btn-small {if $row['status']}layui-btn-danger{/if}">{if !$row['status']}正常{else}封禁{/if}</button>
 			</td>	
 			<td class="">{php echo date("Y-m-d H:i",$row['addtime'])}</td>
 			<td>
 			   <div class="layui-btn-group">
-				    <a class="layui-btn" href="{$_W['siteroot']}web/index.php?c=site&a=entry&do=list&m=hr_album&mid={$row['openid']}">相册({$row['totalcard']})</a>	
+				    <!--<a class="layui-btn" href="{$_W['siteroot']}web/index.php?c=site&a=entry&do=list&m=hr_album&mid={$row['openid']}">相册({$row['totalcard']})</a>	-->
 				    <button type="button" class="layui-btn edituser" data-id="{$row['id']}">修改</button>			   
-				    <button class="layui-btn layui-btn-danger" onclick="deluser('{$row['openid']}','{$row['id']}')">删除用户</button>
+				    <button class="layui-btn layui-btn-danger" onclick="deluser('{$row['openid']}','{$row['id']}')">删除家长</button>
 				  </div>
 			</td>
 		</tr>
@@ -170,7 +170,7 @@ $("#seachuser").on('click',function(){
 	if(keyword.length < 2){
 		layui.use('layer', function(){
 			var layer = layui.layer;
-			layer.msg('请输入粉丝昵称'); 
+			layer.msg('请输入家长昵称'); 
 		});
 		return;
 	}
