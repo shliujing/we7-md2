@@ -32,9 +32,7 @@
 <form class="layui-form layui-form-pane" style="padding:20px;" action="{php echo url('site/entry/baby', array('m' => 'hr_album','op' => 'add'));}" method="post">
 <input type="hidden" name="id" value="{$item['id']}">
     <input type="hidden" name="schoolid" value="{$item['schoolid']}">
-    <input type="hidden" name="schoolname" value="{$item['schoolname']}">
     <input type="hidden" name="classid" value="{$item['classid']}">
-    <input type="hidden" name="classname" value="{$item['classname']}">
   <div class="layui-form-item">
     <label class="layui-form-label">排序：</label>
     <div class="layui-input-block">
@@ -42,17 +40,40 @@
     </div>
   </div>
   <div class="layui-form-item">
-    <label class="layui-form-label">宝贝名称：</label>
+    <label class="layui-form-label">宝贝姓名：</label>
     <div class="layui-input-block">
-      <input type="text" name="babyname"  lay-verify="required" value="{$item['babyname']}"  placeholder="请输入，不要过长" autocomplete="off" class="layui-input">
+      <input type="text" name="name"  lay-verify="required" value="{$item['name']}"  placeholder="请输入数据，不要过长" autocomplete="off" class="layui-input">
     </div>
   </div>
   <div class="layui-form-item">
-    <label class="layui-form-label">宝贝地址：</label>
+    <label class="layui-form-label">身份证编号：</label>
     <div class="layui-input-block">
-      <input id="babyaddress" type="text" name="babyaddress"  value="{$item['babyaddress']}"  placeholder="请输入，不要过长" autocomplete="off" class="layui-input">
+      <input id="num" type="text" name="num"  value="{$item['num']}"  placeholder="请输入数据，不要过长" autocomplete="off" class="layui-input">
     </div>
-  </div> 
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">学校：</label>
+    <div class="layui-input-block">
+      <select name="schoolname" id="schoolname">
+        {loop $schoollist $item1}
+        <option value="{$item1['schoolid']} {$item1['schoolname']}" {if $item1['schoolid'] == $item['schoolid']} selected{/if}>{$item1['schoolname']}</option>
+        {/loop}
+      </select>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">班级：</label>
+    <div class="layui-input-block">
+      <div class="layui-input-block">
+        <select name="classname" id="classname">
+          {loop $schoollist $item1}
+          <option value="{$item1['schoolid']} {$item1['schoolname']}" {if $item1['schoolid'] == $item['schoolid']} selected{/if}>{$item1['schoolname']}</option>
+          {/loop}
+        </select>
+      </div>
+      <input id="classname" type="text" name="classname"  value="{$item['classname']}"  placeholder="请输入数据，不要过长" autocomplete="off" class="layui-input">
+    </div>
+  </div>
   <div class="layui-form-item">
     <label class="layui-form-label">宝贝图片上传</label>
     <div class="layui-input-block">

@@ -42,20 +42,20 @@
   <div class="layui-form-item">
     <label class="layui-form-label">姓名：</label>
     <div class="layui-input-block">
-      <input type="text" name="name" id="name"  lay-verify="required" value="{$item['name']}"  placeholder="请输入，不要过长" autocomplete="off" class="layui-input">
+      <input type="text" name="name" id="name"  lay-verify="required" value="{$item['name']}"  placeholder="请输入数据，不要过长" autocomplete="off" class="layui-input">
     </div>
   </div>
   <div class="layui-form-item">
     <label class="layui-form-label">手机号：</label>
     <div class="layui-input-block">
-      <input id="phone" type="text" name="phone"  value="{$item['phone']}"  placeholder="请输入，不要过长，用于匹配微信老师" autocomplete="off" class="layui-input">
+      <input id="phone" type="text" name="phone"  value="{$item['phone']}"  placeholder="请输入数据，不要过长，用于匹配微信老师" autocomplete="off" class="layui-input">
     </div>
   </div>
 
     <div class="layui-form-item">
         <label class="layui-form-label">用户名：</label>
         <div class="layui-input-block">
-            <input id="username" type="text" name="username" value="{$item['username']}" placeholder="请输入，不要过长" autocomplete="off" class="layui-input">
+            <input id="username" type="text" name="username" value="{$item['username']}" placeholder="请输入数据，不要过长" autocomplete="off" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
@@ -68,8 +68,8 @@
     <label class="layui-form-label">学校：</label>
       <div class="layui-input-block">
           <select name="school" id="school">
-              {loop $schoollist $item}
-              <option value="{$item['schoolid']} {$item['schoolname']}" {if $schoollist['schoolid'] == $item['schoolid']} selected{/if}>{$item['schoolname']}</option>
+              {loop $schoollist $item1}
+              <option value="{$item1['schoolid']} {$item1['schoolname']}" {if $item1['schoolid'] == $item['schoolid']} selected{/if}>{$item1['schoolname']}</option>
               {/loop}
           </select>
     </div>

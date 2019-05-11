@@ -1276,10 +1276,11 @@ class Hr_albumModuleSite extends WeModuleSite
         if ($_W['ispost']) {
             if ($op == 'add') {
                 $id = intval($_GPC['id']);
+                $schoolid = $_GPC['schoolid'] == null ? TIMESTAMP : $_GPC['schoolid'];
                 $data = array(
                     'displayorder' => $_GPC['displayorder'],
                     'title' => $_GPC['title'],
-                    'schoolid' => TIMESTAMP,
+                    'schoolid' => $schoolid,
                     'schoolname' => $_GPC['schoolname'],
                     'schooladdress' => $_GPC['schooladdress'],
                     'addtime' => TIMESTAMP,
@@ -1488,7 +1489,7 @@ class Hr_albumModuleSite extends WeModuleSite
                 if ($id) {
                     $item = pdo_fetch("SELECT * FROM" . tablename($this->modulename . '_school_class') . ' WHERE id = :id', array(':id' => $id));
                 }
-                $schoollist = pdo_fetchall("SELECT * FROM" . tablename($this->modulename . '_school_class') . ' where classid is null group by schoolid order by id limit 100');
+                $schoollist = pdo_fetchall("SELECT * FROM" . tablename($this->modulename . '_school_class') . ' where classid is null group by schoolid order by displayorder limit 100');
 
                 include $this->template('addclass');
             } else {
@@ -1506,16 +1507,19 @@ class Hr_albumModuleSite extends WeModuleSite
         if ($_W['ispost']) {
             if ($op == 'add') {
                 $id = intval($_GPC['id']);
+                $babyid = $_GPC['babyid'] == null ? TIMESTAMP : $_GPC['babyid'];
+                $schoolid = $_GPC['schoolid'] == null ? TIMESTAMP : $_GPC['schoolid'];
+                $classid = $_GPC['classid'] == null ? TIMESTAMP : $_GPC['classid'];
                 $data = array(
                     'displayorder' => $_GPC['displayorder'],
 //                    'title' => $_GPC['title'],
-                    'babyid' => TIMESTAMP,
+                    'babyid' => $babyid,
                     'addtime' => TIMESTAMP,
                     'avatar' => $_GPC['avatar'],
                     'name' => $_GPC['name'],
                     'num' => $_GPC['num'],
-                    'schoolid' => $_GPC['schoolid'],
-                    'classid' => $_GPC['classid'],
+                    'schoolid' => $schoolid,
+                    'classid' => $classid,
                     'schoolname' => $_GPC['schoolname'],
                     'classname' => $_GPC['classname'],
                 );
@@ -1555,6 +1559,36 @@ class Hr_albumModuleSite extends WeModuleSite
                 if ($id) {
                     $item = pdo_fetch("SELECT * FROM" . tablename($this->modulename . '_baby') . ' WHERE id = :id', array(':id' => $id));
                 }
+                $alllist = pdo_fetchall("SELECT * FROM" . tablename($this->modulename . '_school_class') . 'order by displayorder');
+
+                $schoollist = array();
+                $classlist = array();
+                // 管理员模式
+                if ($_W['username'] == 'admin') {
+                    for ($i = 0; $i < count($alllist); $i++) {
+                        if ($alllist[$i]['classid'] == null) {
+                            $schoollist[$i] = $alllist[$i];
+                        } else {
+                            $classlist[$i] = $alllist[$i];
+                        }
+                    }
+                } else {
+                    //老师模式
+                    for ($i = 0; $i < count($alllist); $i++) {
+                        if ($alllist[$i]['schoolid'] == $_W['schoolid']) {
+                            $schoollist[0] = $alllist[$i];
+                            break;
+                        }
+                    }
+                    if ($schoollist[0] != null) {
+                        for ($i = 0; $i < count($alllist); $i++) {
+                            if ($alllist[$i]['schoolid'] == $_W['schoolid'] && $alllist[$i]['classid'] != null) {
+                                $classlist[$i] = $alllist[$i];
+                            }
+                        }
+                    }
+                }
+
                 include $this->template('addbaby');
             } else {
                 $list = pdo_fetchall("SELECT * FROM" . tablename($this->modulename . '_baby'));
