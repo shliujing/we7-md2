@@ -71,23 +71,29 @@
 			<th>排序</th>
 			<th>缩略图</th>
 			<th>分类</th>
+			<th>学校</th>
+			<th>班级</th>
 			<th>操作</th>
 		</tr>
 		</thead>
 		<tbody>
-		{loop $list  $row}
+		{loop $list $key $row}
 		<tr class="pics">
 			<td>
-				<input class="layui-input" name="displayorder[{$row['id']}]" value="{$row['displayorder']}">
+				<span>{php echo $key+1}</span>
+				<!--<input class="layui-input" name="displayorder[{$row['id']}]" value="{$row['displayorder']}">-->
 			</td>
 			<td>
 				<img class="picss" style="width:50px;height:50px;" data-url="{$imgurl}{$row['url']}" src="{$imgurl}{$row['url']}" />
 			</td>
 			<td>
-				<span>{$row['photosname']}</span>
+				<span>{$row['classify']}</span>
 			</td>
 			<td>
-				<span>{$row['photosaddress']}</span>
+				<span>{$row['schoolname']}</span>
+			</td>
+			<td>
+				<span>{$row['classname']}</span>
 			</td>
 			<td>
 				<div class="link-group">

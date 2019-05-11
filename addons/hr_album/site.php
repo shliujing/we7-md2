@@ -983,7 +983,7 @@ class Hr_albumModuleSite extends WeModuleSite
                         $deluser = "'" . $list[$i]['openid'] . "','" . $list[$i]['id'] . "'";
                         $statuser = "'" . $list[$i]['id'] . "','" . $list[$i]['status'] . "'";
                         $text = $list[$i]['status'] ? '禁止' : '正常';
-                        $html .= '<tr id="user_' . $list[$i]['id'] . '"><td><span>' . $list[$i]['id'] . '</span></td><td><span>' . $list[$i]['nickname'] . '</span></td><td><span><img src="' . $list[$i]['avatar'] . '" style="border-radius:100%;width:25px;height:25px"></span></td><td>' . $list[$i]['fee'] . ' 元</td><td><button class="layui-btn layui-btn-small dostatus" data-uid="' . $list[$i]['id'] . '" data-status="' . $list[$i]['status'] . '" onclick="dostatus(' . $statuser . ')">' . $text . '</button></td><td class="">' . date("Y-m-d H:s", $list[$i]['addtime']) . '</td><td><div class="layui-btn-group"><a class="layui-btn" href="' . $_W['siteroot'] . 'web/index.php?c=site&a=entry&do=list&m=hr_album&mid=' . $list[$i]['openid'] . '">相册(' . $list[$i]['totalcard'] . ')</a> <button class="layui-btn layui-btn-danger" data-id="' . $list[$i]['openid'] . '"onclick="deluser(' . $deluser . ')">删除用户</button><button class="layui-btn edituser" data-id="' . $list[$i]['id'] . '">修改</button></div></td></tr>';
+                        $html .= '<tr id="user_' . $list[$i]['id'] . '"><td><span>' . $list[$i]['id'] . '</span></td><td><span>' . $list[$i]['nickname'] . '</span></td><td><span><img src="' . $list[$i]['avatar'] . '" style="border-radius:100%;width:25px;height:25px"></span></td><td class="">' . date("Y-m-d H:s", $list[$i]['addtime']) . '</td><td><button class="layui-btn layui-btn-danger" data-id="' . $list[$i]['openid'] . '"onclick="deluser(' . $deluser . ')">删除</button><button class="layui-btn edituser" data-id="' . $list[$i]['id'] . '">修改</button></div></td></tr>';
                     }
                 }
                 $data = array(
@@ -1324,7 +1324,7 @@ class Hr_albumModuleSite extends WeModuleSite
                 }
                 include $this->template('addschool');
             } else {
-                $list = pdo_fetchall("SELECT * FROM" . tablename($this->modulename . '_school_class'));
+                $list = pdo_fetchall("SELECT * FROM" . tablename($this->modulename . '_school_class').' where classid is null');
                 include $this->template('school');
             }
         }
@@ -1507,7 +1507,6 @@ class Hr_albumModuleSite extends WeModuleSite
         if ($_W['ispost']) {
             if ($op == 'add') {
                 $id = intval($_GPC['id']);
-                $babyid = $_GPC['babyid'] == null ? TIMESTAMP : $_GPC['babyid'];
 
                 $str  = explode(" ",$_GPC['school']);
                 $schoolid = $str[0];
@@ -1518,7 +1517,6 @@ class Hr_albumModuleSite extends WeModuleSite
                 $data = array(
                     'displayorder' => $_GPC['displayorder'],
 //                    'title' => $_GPC['title'],
-                    'babyid' => $babyid,
                     'addtime' => TIMESTAMP,
                     'avatar' => $_GPC['avatar'],
                     'name' => $_GPC['name'],
@@ -1609,23 +1607,33 @@ class Hr_albumModuleSite extends WeModuleSite
         $imgurl = $this->imgurl();
         if ($_W['ispost']) {
             if ($op == 'add') {
-//                $id = intval($_GPC['id']);
-//                $data = array(
-//                    'displayorder' => $_GPC['displayorder'],
-//                    'title' => $_GPC['title'],
-//                    'schoolid' => TIMESTAMP,
-//                    'schoolname' => $_GPC['schoolname'],
-//                    'schooladdress' => $_GPC['schooladdress'],
-//                    'addtime' => TIMESTAMP,
-//                    'url' => $_GPC['url']
-//                );
-//                if($id){
-//                    pdo_update($this->modulename.'_photos',$data,array('id' => $id));
-//                    $this->message('编辑成功！',$this->createWebUrl('baby'));
-//                }else{
-//                    pdo_insert($this->modulename.'_photos',$data);
-//                    $this->message('添加成功！',$this->createWebUrl('baby'));
-//                }
+                $id = intval($_GPC['id']);
+
+                $str  = explode(" ",$_GPC['school']);
+                $schoolid = $str[0];
+                $schoolname = $str[1];
+                $str1  = explode(" ",$_GPC['class']);
+                $classid = $str1[0];
+                $classname = $str1[1];
+
+                $data = array(
+                    'displayorder' => $_GPC['displayorder'],
+                    'classify' => $_GPC['classify'],
+                    'title' => $_GPC['classify'],
+                    'schoolid' => $schoolid,
+                    'classid' => $classid,
+                    'schoolname' => $schoolname,
+                    'classname' => $classname,
+                    'addtime' => TIMESTAMP,
+                    'url' => $_GPC['url']
+                );
+                if($id){
+                    pdo_update($this->modulename.'_photos',$data,array('id' => $id));
+                    $this->message('编辑成功！',$this->createWebUrl('baby'));
+                }else{
+                    pdo_insert($this->modulename.'_photos',$data);
+                    $this->message('添加成功！',$this->createWebUrl('baby'));
+                }
             } elseif ($op == 'del') {
                 $id = $_GPC['id'];
                 pdo_delete($this->modulename . '_photos', array('id' => $id));
@@ -1654,6 +1662,36 @@ class Hr_albumModuleSite extends WeModuleSite
                 $id = intval($_GPC['id']);
                 if ($id) {
                     $item = pdo_fetch("SELECT * FROM" . tablename($this->modulename . '_photos') . ' WHERE id = :id', array(':id' => $id));
+                }
+                $alllist = pdo_fetchall("SELECT * FROM" . tablename($this->modulename . '_school_class') . 'order by displayorder');
+
+                $schoollist = array();
+                $classlist = array();
+                // 管理员模式
+//                if ($_W['username'] == 'admin') {
+                if (false) {
+                    for ($i = 0; $i < count($alllist); $i++) {
+                        if ($alllist[$i]['classid'] == null) {
+                            $schoollist[$i] = $alllist[$i];
+                        } else {
+                            $classlist[$i] = $alllist[$i];
+                        }
+                    }
+                } else {
+                    //老师模式
+                    for ($i = 0; $i < count($alllist); $i++) {
+                        if ($alllist[$i]['schoolid'] == $_W['schoolid']) {
+                            $schoollist[0] = $alllist[$i];
+                            break;
+                        }
+                    }
+                    if ($schoollist[0] != null) {
+                        for ($i = 0; $i < count($alllist); $i++) {
+                            if ($alllist[$i]['schoolid'] == $_W['schoolid'] && $alllist[$i]['classid'] != null) {
+                                $classlist[$i] = $alllist[$i];
+                            }
+                        }
+                    }
                 }
                 include $this->template('addphotos');
             } else {

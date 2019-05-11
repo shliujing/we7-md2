@@ -36,23 +36,23 @@
 	</style>
 </head>
 <body>
-<blockquote class="site-text layui-elem-quote">
+<!--<blockquote class="site-text layui-elem-quote">
   注意：小程序端默认内置客服图片、更多应用图片，如需修改请先看小程序演示。
-</blockquote>
+</blockquote>-->
 <form class="layui-form layui-form-pane" style="padding:20px;" action="" method="post">
-  <div class="layui-form-item">
+ <!-- <div class="layui-form-item">
     <label class="layui-form-label">相册名字</label>
     <div class="layui-input-block">
       <input type="text" name="spacename" value="{$settings['spacename']}"  placeholder="请输入相册名字" autocomplete="off" class="layui-input">
     </div>
-  </div>
+  </div>-->
   <div class="layui-form-item">
     <label class="layui-form-label">公众号名称</label>
     <div class="layui-input-block">
       <input type="text" name="mpname" value="{$settings['mpname']}"  placeholder="用于小程序加粉" autocomplete="off" class="layui-input">
     </div>
   </div>
-  <div class="layui-form-item">
+  <!--<div class="layui-form-item">
     <label class="layui-form-label">创建相册模板标题</label>
     <div class="layui-input-block">
       <input type="text" name="deftitle" value="{if $settings['deftitle']}{$settings['deftitle']}{else}送上我亲手制作的相册，快看看吧{/if}"  placeholder="送上我亲手制作的相册，快看看吧" autocomplete="off" class="layui-input">
@@ -173,9 +173,9 @@
 		<img src="{if $settings['sharepic']}{php echo $this->imgurl().$settings['sharepic']}{/if}">
 </div>
     </div>
-  </div>
+  </div>-->
   <div class="layui-form-item" pane>
-    <label class="layui-form-label">相册模板存储</label>
+    <label class="layui-form-label">相册存储</label>
     <div class="layui-input-block">
       <input type="radio" name="remoteskin" value="0" title="本地存储"  {if !$settings['remoteskin']} checked="checked" {/if}>
       <input type="radio" name="remoteskin" value="1" title="远程存储"  {if $settings['remoteskin']} checked="checked" {/if}>
