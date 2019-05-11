@@ -1508,8 +1508,13 @@ class Hr_albumModuleSite extends WeModuleSite
             if ($op == 'add') {
                 $id = intval($_GPC['id']);
                 $babyid = $_GPC['babyid'] == null ? TIMESTAMP : $_GPC['babyid'];
-                $schoolid = $_GPC['schoolid'] == null ? TIMESTAMP : $_GPC['schoolid'];
-                $classid = $_GPC['classid'] == null ? TIMESTAMP : $_GPC['classid'];
+
+                $str  = explode(" ",$_GPC['school']);
+                $schoolid = $str[0];
+                $schoolname = $str[1];
+                $str1  = explode(" ",$_GPC['class']);
+                $classid = $str1[0];
+                $classname = $str1[1];
                 $data = array(
                     'displayorder' => $_GPC['displayorder'],
 //                    'title' => $_GPC['title'],
@@ -1520,8 +1525,8 @@ class Hr_albumModuleSite extends WeModuleSite
                     'num' => $_GPC['num'],
                     'schoolid' => $schoolid,
                     'classid' => $classid,
-                    'schoolname' => $_GPC['schoolname'],
-                    'classname' => $_GPC['classname'],
+                    'schoolname' => $schoolname,
+                    'classname' => $classname,
                 );
                 if ($id) {
                     pdo_update($this->modulename . '_baby', $data, array('id' => $id));
