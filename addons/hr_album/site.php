@@ -1342,7 +1342,6 @@ class Hr_albumModuleSite extends WeModuleSite
                 $str = explode(" ", $_GPC['school']);
                 $schoolid = $str[0];
                 $schoolname = $str[1];
-                print_r(explode(" ", $str));
                 $salt = random(8);
                 $data = array(
                     'displayorder' => $_GPC['displayorder'],
@@ -1411,7 +1410,7 @@ class Hr_albumModuleSite extends WeModuleSite
                 if ($id) {
                     $item = pdo_fetch("SELECT * FROM" . tablename('users') . ' WHERE uid = :id', array(':id' => $id));
                 }
-                $schoollist = pdo_fetchall("SELECT any_value(schoolid) as schoolid,any_value(schoolname) as schoolname FROM" . tablename($this->modulename . '_school_class') . ' where classid is null group by schooldid order by id limit 100');
+                $schoollist = pdo_fetchall("SELECT any_value(schoolid) as schoolid,any_value(schoolname) as schoolname FROM" . tablename($this->modulename . '_school_class') . ' where classid is null group by schoolid order by displayorder desc');
 
                 include $this->template('addteacher');
             } else {
@@ -1663,6 +1662,11 @@ class Hr_albumModuleSite extends WeModuleSite
                 if ($id) {
                     $item = pdo_fetch("SELECT * FROM" . tablename($this->modulename . '_photos') . ' WHERE id = :id', array(':id' => $id));
                 }
+                if (!$item) {
+                    $item = array();
+                    $item['classify'] = date("Y-m-d", TIMESTAMP);
+                }
+
                 $alllist = pdo_fetchall("SELECT * FROM" . tablename($this->modulename . '_school_class') . 'order by displayorder');
 
                 $schoollist = array();
@@ -1680,14 +1684,14 @@ class Hr_albumModuleSite extends WeModuleSite
                 } else {
                     //老师模式
                     for ($i = 0; $i < count($alllist); $i++) {
-                        if ($alllist[$i]['schoolid'] == $_W['schoolid']) {
+                        if ($alllist[$i]['schoolid'] == $_W['user']['schoolid']) {
                             $schoollist[0] = $alllist[$i];
                             break;
                         }
                     }
                     if ($schoollist[0] != null) {
                         for ($i = 0; $i < count($alllist); $i++) {
-                            if ($alllist[$i]['schoolid'] == $_W['schoolid'] && $alllist[$i]['classid'] != null) {
+                            if ($alllist[$i]['schoolid'] == $_W['user']['schoolid'] && $alllist[$i]['classid'] != null) {
                                 $classlist[$i] = $alllist[$i];
                             }
                         }
@@ -1695,7 +1699,7 @@ class Hr_albumModuleSite extends WeModuleSite
                 }
                 include $this->template('addphotos');
             } else {
-                $list = pdo_fetchall("SELECT * FROM" . tablename($this->modulename . '_photos'));
+                $list = pdo_fetchall("SELECT * FROM" . tablename($this->modulename . '_photos') ." order by id desc");
                 include $this->template('photos');
             }
         }
