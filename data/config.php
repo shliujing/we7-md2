@@ -3,11 +3,11 @@ defined('IN_IA') or exit('Access Denied');
 
 $config = array();
 
-//$config['db']['master']['host'] = '101.132.181.177';
-//$config['db']['master']['username'] = 'dev';
-//$config['db']['master']['password'] = 'Aa111111';
-//$config['db']['master']['port'] = '3306';
-//$config['db']['master']['database'] = 'mengda';
+$config['db']['master']['host'] = '101.132.181.177';
+$config['db']['master']['username'] = 'dev';
+$config['db']['master']['password'] = 'Aa111111';
+$config['db']['master']['port'] = '3306';
+$config['db']['master']['database'] = 'mengda';
 
 //$config['db']['master']['host'] = '47.100.226.72';
 //$config['db']['master']['username'] = 'dev';
@@ -15,11 +15,11 @@ $config = array();
 //$config['db']['master']['port'] = '3306';
 //$config['db']['master']['database'] = 'wx4_tmp';
 
-$config['db']['master']['host'] = 'localhost';
-$config['db']['master']['username'] = 'dev';
-$config['db']['master']['password'] = 'Aa111111';
-$config['db']['master']['port'] = '3306';
-$config['db']['master']['database'] = 'wx4_tmp';
+//$config['db']['master']['host'] = 'localhost';
+//$config['db']['master']['username'] = 'dev';
+//$config['db']['master']['password'] = 'Aa111111';
+//$config['db']['master']['port'] = '3306';
+//$config['db']['master']['database'] = 'wx4_tmp';
 
 $config['db']['master']['charset'] = 'utf8';
 $config['db']['master']['pconnect'] = 0;
