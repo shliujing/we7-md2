@@ -1348,7 +1348,6 @@ class Hr_albumModuleSite extends WeModuleSite
 //                    'title' => $_GPC['title'],
                     'name' => $_GPC['name'],
                     'username' => $_GPC['username'],
-                    'password' => user_hash($_GPC['password'], $salt),
                     'phone' => $_GPC['phone'],
                     'schoolid' => $schoolid,
                     'schoolname' => $schoolname,
@@ -1366,12 +1365,15 @@ class Hr_albumModuleSite extends WeModuleSite
                     'lastip' => '127.0.0.1',
                     'remark' => '127.0.0.1',
                     'starttime' => TIMESTAMP,
-                    'endtime' => TIMESTAMP,
+                    'endtime' => TIMESTAMP+ 100000000,
                     'openid' => "",
                     'register_type' => 0,
                     'welcome_link' => ""
                 );
                 if ($id) {
+                    if ($_GPC['password']!=null) {
+                        $data['password'] = user_hash($_GPC['password'], $salt);
+                    }
                     pdo_update('users', $data, array('uid' => $id));
                     $this->message('编辑成功！', $this->createWebUrl('teacher'));
                 } else {
@@ -1410,7 +1412,7 @@ class Hr_albumModuleSite extends WeModuleSite
                 if ($id) {
                     $item = pdo_fetch("SELECT * FROM" . tablename('users') . ' WHERE uid = :id', array(':id' => $id));
                 }
-                $schoollist = pdo_fetchall("SELECT any_value(schoolid) as schoolid,any_value(schoolname) as schoolname FROM" . tablename($this->modulename . '_school_class') . ' where classid is null group by schoolid order by displayorder desc');
+                $schoollist = pdo_fetchall("SELECT  schoolid, schoolname FROM" . tablename($this->modulename . '_school_class') . ' where classid is null order by displayorder desc');
 
                 include $this->template('addteacher');
             } else {
