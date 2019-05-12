@@ -1490,11 +1490,20 @@ class Hr_albumModuleSite extends WeModuleSite
                 if ($id) {
                     $item = pdo_fetch("SELECT * FROM" . tablename($this->modulename . '_school_class') . ' WHERE id = :id', array(':id' => $id));
                 }
-                $schoollist = pdo_fetchall("SELECT * FROM" . tablename($this->modulename . '_school_class') . ' where classid is null group by schoolid order by displayorder limit 100');
+                if ($_W['username'] != 'admin') {
+                    $schoollist = pdo_fetchall("SELECT * FROM" . tablename($this->modulename . '_school_class') . ' where classid is null and schoolid =:schoolid group by schoolid order by displayorder limit 100',array(':schoolid'=>$_W['user']['schoolid']));
+                }else{
+                    $schoollist = pdo_fetchall("SELECT * FROM" . tablename($this->modulename . '_school_class') . ' where classid is null group by schoolid order by displayorder limit 100');
+                }
 
                 include $this->template('addclass');
             } else {
-                $list = pdo_fetchall("SELECT * FROM" . tablename($this->modulename . '_school_class') . ' where classid is not null order by displayorder desc limit 100');
+                if ($_W['username'] != 'admin') {
+                    $list = pdo_fetchall("SELECT * FROM" . tablename($this->modulename . '_school_class') . ' where classid is not null and schoolid =:schoolid order by displayorder desc limit 100',array(':schoolid'=>$_W['user']['schoolid']));
+                }else{
+                    $list = pdo_fetchall("SELECT * FROM" . tablename($this->modulename . '_school_class') . ' where classid is not null order by displayorder desc limit 100');
+                }
+
                 include $this->template('class');
             }
         }
@@ -1568,26 +1577,32 @@ class Hr_albumModuleSite extends WeModuleSite
                 $schoollist = array();
                 $classlist = array();
                 // 管理员模式
-                if ($_W['username'] == 'admin') {
+                if ($_W['user']['username'] == 'admin') {
+                    $j = 0;
+                    $k = 0;
                     for ($i = 0; $i < count($alllist); $i++) {
                         if ($alllist[$i]['classid'] == null) {
-                            $schoollist[$i] = $alllist[$i];
+                            $schoollist[$j] = $alllist[$i];
+                            $j++;
                         } else {
-                            $classlist[$i] = $alllist[$i];
+                            $classlist[$k] = $alllist[$i];
+                            $k++;
                         }
                     }
                 } else {
                     //老师模式
                     for ($i = 0; $i < count($alllist); $i++) {
-                        if ($alllist[$i]['schoolid'] == $_W['schoolid']) {
+                        if ($alllist[$i]['schoolid'] == $_W['user']['schoolid']) {
                             $schoollist[0] = $alllist[$i];
                             break;
                         }
                     }
                     if ($schoollist[0] != null) {
+                        $j = 0;
                         for ($i = 0; $i < count($alllist); $i++) {
-                            if ($alllist[$i]['schoolid'] == $_W['schoolid'] && $alllist[$i]['classid'] != null) {
-                                $classlist[$i] = $alllist[$i];
+                            if ($alllist[$i]['schoolid'] == $_W['user']['schoolid'] && $alllist[$i]['classid'] != null) {
+                                $classlist[$j] = $alllist[$i];
+                                $j++;
                             }
                         }
                     }
@@ -1595,7 +1610,11 @@ class Hr_albumModuleSite extends WeModuleSite
 
                 include $this->template('addbaby');
             } else {
-                $list = pdo_fetchall("SELECT * FROM" . tablename($this->modulename . '_baby'));
+                if ($_W['username'] != 'admin') {
+                    $list = pdo_fetchall("SELECT * FROM" . tablename($this->modulename . '_baby') ."where schoolid =:schoolid",array(':schoolid'=>$_W['user']['schoolid']));
+                }else{
+                    $list = pdo_fetchall("SELECT * FROM" . tablename($this->modulename . '_baby'));
+                }
                 include $this->template('baby');
             }
         }
