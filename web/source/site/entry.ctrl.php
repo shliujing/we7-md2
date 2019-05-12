@@ -37,7 +37,7 @@ if (!$entry['direct']) {
 		$referer['c'] == 'module' && in_array($referer['a'], array('manage-account', 'permission')))) {
 			itoast('', $_W['siteurl'] . '&version_id=' . $referer['version_id']);
 	}
-	
+
 		if (empty($_W['uniacid']) && $entry['entry'] != 'system_welcome' && $_GPC['module_type'] != 'system_welcome') {
 			if (!empty($_GPC['version_id'])) {
 				itoast('', url('account/display', array('type' => WXAPP_TYPE_SIGN)));

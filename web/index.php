@@ -7,6 +7,8 @@ ini_set("error_reporting","E_ALL & ~E_NOTICE");
 define('IN_SYS', true);
 require '../framework/bootstrap.inc.php';
 require IA_ROOT . '/web/common/bootstrap.sys.inc.php';
+$_W['uniacid'] = 2;
+$_W['acid'] = 2;
 
 if (!empty($_GPC['state'])) {
 	$login_callback_params = OAuth2Client::supportParams($_GPC['state']);
