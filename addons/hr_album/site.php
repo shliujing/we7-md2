@@ -1371,6 +1371,7 @@ class Hr_albumModuleSite extends WeModuleSite
                     'welcome_link' => ""
                 );
                 if ($id) {
+                    // 修改
                     if ($_GPC['password']!=null) {
                         $data['password'] = user_hash($_GPC['password'], $salt);
                     }
@@ -1378,7 +1379,7 @@ class Hr_albumModuleSite extends WeModuleSite
                     $this->message('编辑成功！', $this->createWebUrl('teacher'));
                 } else {
                     // 新增是加盐
-//                    $data = user_hash($_GPC['password'], $salt);
+                    $data['password'] = user_hash($_GPC['password'], $salt);
                     pdo_insert('users', $data);
                     $this->message('添加成功！', $this->createWebUrl('teacher'));
                 }
