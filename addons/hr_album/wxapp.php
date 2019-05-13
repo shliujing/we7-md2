@@ -396,7 +396,7 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
                 'addtime' => TIMESTAMP
             );
             pdo_insert($this->modulename . '_user', $data);
-        }else if ($isave['type']==1){
+        } else if ($isave['type'] == 1) {
             $isave = pdo_fetch("SELECT a.id,a.status,a.fee,a.type,a.name,a.phone,b.schoolname,b.schoolid,b.classid,b.classname FROM" . tablename($this->modulename . '_user') . ' as a left join ims_users b on a.phone = b.phone WHERE a.openid = :openid', array(':openid' => $oauth['openid']));
             $user['schoolid'] = $isave['schoolid'];
             $user['classid'] = $isave['classid'];
@@ -462,6 +462,18 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
             ':num' => $_GPC['num']
         ));
         if ($info) {
+            // 之前的清除掉
+            $info1 = pdo_fetch("SELECT * FROM" . tablename($this->modulename . '_baby') . ' WHERE uniacid = :uniacid and openid = :openid', array(
+                ':uniacid' => $_W['uniacid'],
+                ':openid' => $_GPC['openid']
+            ));
+            if ($info1) {
+                pdo_query("UPDATE " . tablename($this->modulename . '_baby') . " SET openid = :openid, nickname = :nickname  WHERE id = :id", array(
+                    ':openid' => "",
+                    ':nickname' => "",
+                    ':id' => $info1['id'],
+                ));
+            }
             pdo_query("UPDATE " . tablename($this->modulename . '_baby') . " SET openid = :openid, nickname = :nickname  WHERE id = :id", array(
                 ':openid' => $_GPC['openid'],
                 ':nickname' => $_GPC['nickname'],
