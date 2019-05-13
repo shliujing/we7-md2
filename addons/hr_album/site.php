@@ -1621,6 +1621,7 @@ class Hr_albumModuleSite extends WeModuleSite
         }
     }
 
+    // todo 管理员显示所有学校，联动显示班级
     public function doWebPhotos()
     {
         global $_W, $_GPC;
@@ -1638,7 +1639,6 @@ class Hr_albumModuleSite extends WeModuleSite
                 $classname = $str1[1];
 
                 $data = array(
-                    'displayorder' => $_GPC['displayorder'],
                     'classify' => $_GPC['classify'],
                     'title' => $_GPC['classify'],
                     'schoolid' => $schoolid,
@@ -1650,10 +1650,10 @@ class Hr_albumModuleSite extends WeModuleSite
                 );
                 if($id){
                     pdo_update($this->modulename.'_photos',$data,array('id' => $id));
-                    $this->message('编辑成功！',$this->createWebUrl('baby'));
+                    $this->message('编辑成功！',$this->createWebUrl('photos'));
                 }else{
                     pdo_insert($this->modulename.'_photos',$data);
-                    $this->message('添加成功！',$this->createWebUrl('baby'));
+                    $this->message('添加成功！',$this->createWebUrl('photos'));
                 }
             } elseif ($op == 'del') {
                 $id = $_GPC['id'];

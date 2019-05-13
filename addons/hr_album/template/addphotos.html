@@ -67,13 +67,13 @@
     <label class="layui-form-label">照片图片上传</label>
     <div class="layui-input-block">
       <input type="file" name="file" id="headbg" class="layui-upload-file">
-      <input id="thumb" type="hidden" name="thumb" value="{$item['thumb']}">
+      <input id="url" type="hidden" name="url" value="{$item['url']}">
       &nbsp;&nbsp;(图片尺寸 500*300)
 </div>
     </div>
   </div>
   <div id="bgimg">
-  {if $item['thumb']}<img src="{$imgurl}{$item['thumb']}">{/if}
+  {if $item['url']}<img src="{$imgurl}{$item['url']}">{/if}
   </div>  
   <div class="layui-form-item">
     <div class="layui-input-block">
@@ -95,7 +95,7 @@ layui.use(['form','upload'],function(){
     		  layer.msg('缩略图上传成功'); 
     		  var str = '<img src="'+res.reurl+'" />';
     		  $("#bgimg").html(str);     
-    		  $("#thumb").val(res.src);
+    		  $("#url").val(res.src);
     	    console.log(res); //上传成功返回值，必须为json格式
     	  }
     	});

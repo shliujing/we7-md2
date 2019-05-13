@@ -894,16 +894,16 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
             $data = array();
             if ($openid) {//已登录
                 if ($searchIndex) {//我的宝贝
-                    $data = pdo_fetchall("SELECT title,url,classify,schoolid FROM " . tablename($this->modulename . '_photos') . " WHERE uniacid = :uniacid and openid = :openid group by classify ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
-                        ':uniacid' => $uniacid,
+                    $data = pdo_fetchall("SELECT title,url,classify,schoolid FROM " . tablename($this->modulename . '_photos') . " WHERE openid = :openid group by classify ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
                         ':openid' => $openid
                     ));
                 } else {
-                    $data = pdo_fetchall("SELECT title,url,classify,schoolid FROM " . tablename($this->modulename . '_photos') . " WHERE uniacid = :uniacid and schoolid = :schoolid group by classify ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
-                        ':uniacid' => $uniacid,
+                    $data = pdo_fetchall("SELECT title,url,classify,schoolid FROM " . tablename($this->modulename . '_photos') . " WHERE schoolid = :schoolid group by classify ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
                         ':schoolid' => $schoolid
                     ));
                 }
+
+                //这里基本不会执行了，因为必须登录
             } else {//没登录，best = 1 为初始推荐的，默认只有幼儿园有数据，我的孩子是没有的
                 if (!$searchIndex) {// 幼儿园
                     $data = pdo_fetchall("SELECT title,url,classify,schoolid FROM " . tablename($this->modulename . '_photos') . " WHERE uniacid = :uniacid and best=1  group by classify ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
@@ -935,15 +935,13 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
             $psize = 10;
             if ($openid) {//已登录
                 if ($searchIndex) {//我的宝贝
-                    $data = pdo_fetchall("SELECT title,url,classify,schoolid FROM " . tablename($this->modulename . '_photos') . " WHERE uniacid = :uniacid and openid = :openid and  classify =:classify ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
-                        ':uniacid' => $uniacid,
+                    $data = pdo_fetchall("SELECT title,url,classify,schoolid FROM " . tablename($this->modulename . '_photos') . " WHERE classify =:classify ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
                         ':openid' => $openid,
                         ':classify' => $classify
 
                     ));
                 } else {
-                    $data = pdo_fetchall("SELECT title,url,classify,schoolid FROM " . tablename($this->modulename . '_photos') . " WHERE uniacid = :uniacid and schoolid = :schoolid  and  classify =:classify  ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
-                        ':uniacid' => $uniacid,
+                    $data = pdo_fetchall("SELECT title,url,classify,schoolid FROM " . tablename($this->modulename . '_photos') . " WHERE schoolid = :schoolid  and  classify =:classify  ORDER BY addtime desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(
                         ':schoolid' => $schoolid,
                         ':classify' => $classify,
                     ));
