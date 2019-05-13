@@ -386,7 +386,7 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
             'avatarUrl' => $_GPC['avatarUrl'],
             'openid' => $oauth['openid'],
         );
-        $isave = pdo_fetch("SELECT id,status,fee FROM" . tablename($this->modulename . '_user') . ' WHERE openid = :openid', array(':openid' => $oauth['openid']));
+        $isave = pdo_fetch("SELECT id,status,fee,type,name,phone FROM" . tablename($this->modulename . '_user') . ' WHERE openid = :openid', array(':openid' => $oauth['openid']));
         if (!$isave['id']) {
             $data = array(
                 'nickname' => $user['nickName'],
@@ -398,6 +398,9 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
             pdo_insert($this->modulename . '_user', $data);
         }
         $user['status'] = $isave['status'];
+        $user['type'] = $isave['type'];
+        $user['name'] = $isave['name'];
+        $user['phone'] = $isave['phone'];
         return json_encode($user);
     }
 
@@ -474,36 +477,26 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
         return json_encode($info);
     }
 
-//用户类型判断接口
-    public function doPageCaseUser()
-    {
-        global $_GPC, $_W;
-        $info = pdo_fetch("SELECT * FROM" . tablename($this->modulename . '_user') . ' WHERE uniacid = :uniacid and openid = :openid', array(
-            ':uniacid' => $_W['uniacid'],
-            ':openid' => $_GPC['openid']
-        ));
-        return json_encode($info);
-    }
-
 //老师信息绑定页，参照家长页 todo 新起 1 个表，用于展示用户，更新到原来的 user 表上。老表加 phone， type ，teachername
     public function doPagePipeiTe()
     {
         global $_GPC, $_W;
+        $list = pdo_fetchall("SELECT * FROM" . tablename('users'));
 
-        $info = pdo_fetch("SELECT * FROM" . tablename($this->modulename . '_user_backend') . ' WHERE uniacid = :uniacid and type=:type and phone = :phone', array(
-            ':uniacid' => $_W['uniacid'],
-            ':type' => $_W['type'],
-            ':phone' => $_GPC['phone']
+        $info = pdo_fetch("SELECT name,phone,phone,schoolname,schoolid,username FROM" . tablename('users') . ' WHERE phone = :phone', array(
+            ':phone' => $_GPC['num']
         ));
 
         if ($info) {
-            pdo_query("UPDATE " . tablename($this->modulename . '_user') . " SET teachername = :teachername , phone = :phone , type = :type WHERE  openid = :openid ", array(
-                ':teachername' => $info['teachername'],
+            pdo_query("UPDATE " . tablename($this->modulename . '_user') . " SET name = :name , phone = :phone , type = :type WHERE  openid = :openid ", array(
+                ':name' => $info['name'],
                 ':phone' => $info['phone'],
-                ':type' => $info['type'],
+                ':type' => 1,
                 ':openid' => $_GPC['openid']
             ));
         }
+
+        $info['num'] = $info['phone'];
 
         return json_encode($info);
     }

@@ -1528,6 +1528,7 @@ class Hr_albumModuleSite extends WeModuleSite
                     'displayorder' => $_GPC['displayorder'],
 //                    'title' => $_GPC['title'],
                     'addtime' => TIMESTAMP,
+                    'uniacid' => 2,
                     'avatar' => $_GPC['avatar'],
                     'name' => $_GPC['name'],
                     'num' => $_GPC['num'],

@@ -34,11 +34,7 @@ class WxappAccount extends WeAccount {
 		}
 		$url = "https://api.weixin.qq.com/sns/jscode2session?appid={$this->account['key']}&secret={$this->account['secret']}&js_code={$code}&grant_type=authorization_code";
 		 $response = $this->requestApi($url);
-        if ($response!=null && $response['openid']!=null) {
-            $userInfo = pdo_fetch("SELECT * FROM ims_hr_album_user where openid = :openid", array(':id' => $response['openid']));
-            $response['type'] = $userInfo['type'];
-        }
-        //todo 验证 openid
+
         return $response;
 	}
 
