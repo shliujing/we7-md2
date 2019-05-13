@@ -396,6 +396,12 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
                 'addtime' => TIMESTAMP
             );
             pdo_insert($this->modulename . '_user', $data);
+        }else if ($isave['type']==1){
+            $isave = pdo_fetch("SELECT a.id,a.status,a.fee,a.type,a.name,a.phone,b.schoolname,b.schoolid,b.classid,b.classname FROM" . tablename($this->modulename . '_user') . ' as a left join ims_users b on a.phone = b.phone WHERE a.openid = :openid', array(':openid' => $oauth['openid']));
+            $user['schoolid'] = $isave['schoolid'];
+            $user['classid'] = $isave['classid'];
+            $user['schoolname'] = $isave['schoolname'];
+            $user['classname'] = $isave['classname'];
         }
         $user['status'] = $isave['status'];
         $user['type'] = $isave['type'];
@@ -483,7 +489,7 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
         global $_GPC, $_W;
         $list = pdo_fetchall("SELECT * FROM" . tablename('users'));
 
-        $info = pdo_fetch("SELECT name,phone,phone,schoolname,schoolid,username FROM" . tablename('users') . ' WHERE phone = :phone', array(
+        $info = pdo_fetch("SELECT name,phone,schoolname,schoolid,username FROM" . tablename('users') . ' WHERE phone = :phone', array(
             ':phone' => $_GPC['num']
         ));
 
