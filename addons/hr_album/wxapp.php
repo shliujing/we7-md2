@@ -449,11 +449,11 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
             $pic = $_FILES["file"];
             $path =  $this->savepics($pic);
 
-            $classify = date('Y-m-d/');
+            $classify = date('Y-m-d');
             $data = array(
                 'classify' => $classify,
                 'title' => $classify,
-                'schoolid' => $_GPC['classid'],
+                'schoolid' => $_GPC['schoolid'],
                 'classid' => '',
                 'schoolname' => $_GPC['schoolname'],
                 'classname' => '',
