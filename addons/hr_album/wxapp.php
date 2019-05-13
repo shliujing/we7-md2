@@ -447,7 +447,21 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
             echo "Error: " . $_FILES["file"]["error"] . "<br />";
         } else {
             $pic = $_FILES["file"];
-            return $this->savepics($pic);
+            $path =  $this->savepics($pic);
+
+            $classify = date('Y-m-d/');
+            $data = array(
+                'classify' => $classify,
+                'title' => $classify,
+                'schoolid' => $_GPC['classid'],
+                'classid' => '',
+                'schoolname' => $_GPC['schoolname'],
+                'classname' => '',
+                'addtime' => TIMESTAMP,
+                'url' => $path
+            );
+            pdo_insert($this->modulename.'_photos',$data);
+            return $path;
         }
     }
 
