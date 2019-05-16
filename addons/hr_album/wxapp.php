@@ -413,6 +413,7 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
         $user['num'] = $isave['num'];
         $user['avatar'] = $isave['avatar'];
         return json_encode($user);
+
     }
 
     public function doPageSetdata()
