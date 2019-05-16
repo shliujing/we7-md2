@@ -386,7 +386,7 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
             'avatarUrl' => $_GPC['avatarUrl'],
             'openid' => $oauth['openid'],
         );
-        $isave = pdo_fetch("SELECT id,status,fee,type,name,phone FROM" . tablename($this->modulename . '_user') . ' WHERE openid = :openid', array(':openid' => $oauth['openid']));
+        $isave = pdo_fetch("SELECT a.id, b.id as babyid, b.name as babyname, b.avatar, b.num as num, a.status,a.fee,a.type,a.name,a.phone, b.schoolname,b.schoolid,b.classid,b.classname FROM" . tablename($this->modulename . '_user') . ' as a left join ims_hr_album_baby b on a.openid = b.openid WHERE a.openid = :openid', array(':openid' => $oauth['openid']));
         if (!$isave['id']) {
             $data = array(
                 'nickname' => $user['nickName'],
@@ -395,18 +395,23 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
                 'uniacid' => $_W['uniacid'],
                 'addtime' => TIMESTAMP
             );
+
             pdo_insert($this->modulename . '_user', $data);
-        } else if ($isave['type'] == 1) {
+        } else if ($isave['type'] == 1) { //老师
             $isave = pdo_fetch("SELECT a.id,a.status,a.fee,a.type,a.name,a.phone,b.schoolname,b.schoolid,b.classid,b.classname FROM" . tablename($this->modulename . '_user') . ' as a left join ims_users b on a.phone = b.phone WHERE a.openid = :openid', array(':openid' => $oauth['openid']));
-            $user['schoolid'] = $isave['schoolid'];
-            $user['classid'] = $isave['classid'];
-            $user['schoolname'] = $isave['schoolname'];
-            $user['classname'] = $isave['classname'];
         }
+        $user['schoolid'] = $isave['schoolid'];
+        $user['classid'] = $isave['classid'];
+        $user['schoolname'] = $isave['schoolname'];
+        $user['classname'] = $isave['classname'];
         $user['status'] = $isave['status'];
         $user['type'] = $isave['type'];
         $user['name'] = $isave['name'];
         $user['phone'] = $isave['phone'];
+        $user['babyid'] = $isave['babyid'];
+        $user['babyname'] = $isave['babyname'];
+        $user['num'] = $isave['num'];
+        $user['avatar'] = $isave['avatar'];
         return json_encode($user);
     }
 
@@ -470,13 +475,13 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
         global $_GPC, $_W;
         $cfg = $this->module['config'];
 
-        //先把父母亲名字去掉吧
+        //根据身份证编号，查询是否有宝贝记录
         $info = pdo_fetch("SELECT * FROM" . tablename($this->modulename . '_baby') . ' WHERE uniacid = :uniacid and num = :num', array(
             ':uniacid' => $_W['uniacid'],
             ':num' => $_GPC['num']
         ));
-        if ($info) {
-            // 之前的$info1清除掉
+        if ($info) {//如果有
+            // 先查询这条宝贝的关联爸爸记录
             $info1 = pdo_fetch("SELECT * FROM" . tablename($this->modulename . '_baby') . ' WHERE uniacid = :uniacid and openid = :openid', array(
                 ':uniacid' => $_W['uniacid'],
                 ':openid' => $_GPC['openid']
@@ -498,8 +503,14 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
                 ':type' => 2,
                 ':openid' => $_GPC['openid']
             ));
-        }
 
+            $info['openid'] = $_GPC['openid'];
+            $info['type'] = 2;
+            $info['babyid'] = $info['id'];
+            $info['avatarUrl'] = $_GPC['avatar'];
+            $info['nickName'] = $info['nickname'];
+            $info['babyiname'] = $info['name'];
+        }
         return json_encode($info);
     }
 
