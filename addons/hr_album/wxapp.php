@@ -476,7 +476,7 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
             ':num' => $_GPC['num']
         ));
         if ($info) {
-            // 之前的清除掉
+            // 之前的$info1清除掉
             $info1 = pdo_fetch("SELECT * FROM" . tablename($this->modulename . '_baby') . ' WHERE uniacid = :uniacid and openid = :openid', array(
                 ':uniacid' => $_W['uniacid'],
                 ':openid' => $_GPC['openid']
@@ -492,6 +492,11 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
                 ':openid' => $_GPC['openid'],
                 ':nickname' => $_GPC['nickname'],
                 ':id' => $info['id'],
+            ));
+
+            pdo_query("UPDATE " . tablename($this->modulename . '_user') . " SET type = :type WHERE  openid = :openid ", array(
+                ':type' => 2,
+                ':openid' => $_GPC['openid']
             ));
         }
 
@@ -526,9 +531,14 @@ class Hr_albumModuleWxapp extends WeModuleWxapp
                 ':type' => 1,
                 ':openid' => $_GPC['openid']
             ));
-        }
+            $huser = pdo_fetch("SELECT nickname, avatar,type,status from " . tablename($this->modulename . '_user') . ' WHERE openid = :openid', array(':openid' => $_GPC['openid']));
 
-        $info['num'] = $info['phone'];
+            $info['type'] = $info['phone'];
+            $info['avatarUrl'] = $huser['avatar'];
+            $info['nickName'] = $huser['nickname'];
+            $info['type'] = $huser['type'];
+            $info['status'] = $huser['status'];
+        }
 
         return json_encode($info);
     }
